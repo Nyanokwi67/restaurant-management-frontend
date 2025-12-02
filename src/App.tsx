@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Tables from './pages/tables';
 import Orders from './pages/orders';
 import CreateOrder from './pages/CreateOrder';
+import OrderDetails from './pages/OerderDetails';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -29,7 +30,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Protected Routes */}
+          {/* Protected Routes - Staff Only */}
           <Route
             path="/dashboard"
             element={
@@ -59,6 +60,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Orders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order/:orderId"
+            element={
+              <ProtectedRoute>
+                <OrderDetails />
               </ProtectedRoute>
             }
           />

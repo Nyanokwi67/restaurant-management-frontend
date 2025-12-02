@@ -43,13 +43,16 @@ const CreateOrder: React.FC = () => {
     try {
       // Fetch menu items
       const menuData = await menuItemsAPI.getAll();
+      console.log('Menu items loaded:', menuData);
       setMenuItems(menuData.filter((item: MenuItem) => item.available));
 
       // Fetch table info
       const tablesData = await tablesAPI.getAll();
       const currentTable = tablesData.find((t: Table) => t.id === parseInt(tableId || '0'));
+      console.log('Current table:', currentTable);
       setTable(currentTable || null);
     } catch (err) {
+      console.error('Error loading data:', err);
       setError('Failed to load menu');
     } finally {
       setLoading(false);
@@ -57,6 +60,8 @@ const CreateOrder: React.FC = () => {
   };
 
   const addItem = (menuItem: MenuItem) => {
+    console.log('Adding item:', menuItem.name);
+    
     const existingItem = orderItems.find((item) => item.id === menuItem.id);
 
     if (existingItem) {
@@ -66,9 +71,11 @@ const CreateOrder: React.FC = () => {
           item.id === menuItem.id ? { ...item, quantity: item.quantity + 1 } : item
         )
       );
+      console.log('Increased quantity for:', menuItem.name);
     } else {
       // Add new item
       setOrderItems([...orderItems, { ...menuItem, quantity: 1 }]);
+      console.log('Added new item:', menuItem.name);
     }
   };
 
@@ -124,10 +131,12 @@ const CreateOrder: React.FC = () => {
         status: 'open',
       };
 
+      console.log('Saving order:', orderData);
       await ordersAPI.create(orderData);
       alert('Order created successfully!');
       navigate('/orders');
     } catch (err) {
+      console.error('Error saving order:', err);
       alert('Failed to create order');
     }
   };
@@ -193,6 +202,12 @@ const CreateOrder: React.FC = () => {
       </nav>
 
       <div className="container mx-auto px-6 py-8">
+        {error && (
+          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Menu Items Section */}
           <div className="lg:col-span-2">
@@ -231,8 +246,7 @@ const CreateOrder: React.FC = () => {
               {filteredMenuItems.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-orange-300 transition cursor-pointer"
-                  onClick={() => addItem(item)}
+                  className="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-orange-300 transition"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div>
@@ -241,7 +255,14 @@ const CreateOrder: React.FC = () => {
                     </div>
                     <p className="text-xl font-black text-orange-600">KES {item.price}</p>
                   </div>
-                  <button className="w-full mt-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition font-semibold">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      addItem(item);
+                    }}
+                    className="w-full mt-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition font-semibold"
+                  >
                     Add to Order
                   </button>
                 </div>
@@ -273,20 +294,29 @@ const CreateOrder: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => removeItem(item.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              removeItem(item.id);
+                            }}
                             className="w-8 h-8 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center justify-center font-bold"
                           >
                             −
                           </button>
                           <span className="w-8 text-center font-bold">{item.quantity}</span>
                           <button
-                            onClick={() => addItem(item)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              addItem(item);
+                            }}
                             className="w-8 h-8 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center justify-center font-bold"
                           >
                             +
                           </button>
                           <button
-                            onClick={() => deleteItem(item.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              deleteItem(item.id);
+                            }}
                             className="ml-2 w-8 h-8 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center justify-center"
                           >
                             🗑️
