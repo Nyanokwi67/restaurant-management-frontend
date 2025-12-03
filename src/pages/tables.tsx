@@ -37,7 +37,7 @@ const Tables: React.FC = () => {
     if (table.status === 'free') {
       navigate(`/create-order/${table.id}`);
     } else {
-      navigate(`/orders`);
+      alert('This table is currently occupied');
     }
   };
 
@@ -56,16 +56,17 @@ const Tables: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      {/* Navigation */}
       <nav className="bg-white shadow-lg border-b-4 border-orange-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-                <span className="text-2xl">🍽️</span>
+                <span className="text-xl font-black text-white">MR</span>
               </div>
               <div>
-                <h1 className="text-xl font-black text-gray-900">Miriam'sRestaurant</h1>
-                <p className="text-xs text-orange-600 font-semibold uppercase">{user?.role}</p>
+                <h1 className="text-xl font-black text-gray-900">Restaurant Tables</h1>
+                <p className="text-xs text-orange-600 font-semibold">Table Management</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -74,12 +75,6 @@ const Tables: React.FC = () => {
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold"
               >
                 Dashboard
-              </button>
-              <button
-                onClick={() => navigate('/orders')}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold"
-              >
-                My Orders
               </button>
               <div className="text-right">
                 <p className="text-sm font-bold text-gray-900">{user?.name}</p>
@@ -97,45 +92,44 @@ const Tables: React.FC = () => {
       </nav>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-4xl font-black text-gray-900 mb-2">Restaurant Tables 🪑</h2>
-          <p className="text-gray-600 text-lg">Select a table to create or view orders</p>
-        </div>
-
         {error && (
           <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="mb-8">
+          <h2 className="text-4xl font-black text-gray-900 mb-2">Available Tables</h2>
+          <p className="text-gray-600 text-lg">Click on a free table to create an order</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {tables.map((table) => (
             <button
               key={table.id}
               onClick={() => handleTableClick(table)}
-              className={`p-8 rounded-2xl border-4 text-center transition transform hover:scale-105 hover:shadow-2xl ${
+              disabled={table.status === 'occupied'}
+              className={`relative p-8 rounded-2xl shadow-xl transition transform hover:scale-105 ${
                 table.status === 'free'
-                  ? 'bg-green-50 border-green-300 hover:bg-green-100'
-                  : 'bg-red-50 border-red-300 hover:bg-red-100'
+                  ? 'bg-gradient-to-br from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 cursor-pointer'
+                  : 'bg-gradient-to-br from-red-400 to-orange-500 cursor-not-allowed opacity-75'
               }`}
             >
-              <div className="text-6xl mb-3">🪑</div>
-              <p className="text-4xl font-black text-gray-900 mb-2">T{table.number}</p>
-              <p className="text-sm text-gray-600 mb-1">{table.seats} seats</p>
-              <p
-                className={`text-xs font-bold uppercase mt-2 ${
-                  table.status === 'free' ? 'text-green-700' : 'text-red-700'
-                }`}
-              >
-                {table.status}
-              </p>
+              <div className="text-center text-white">
+                <div className="text-5xl font-black mb-2">T{table.number}</div>
+                <div className="h-1 w-16 bg-white rounded-full mx-auto mb-3"></div>
+                <div className="text-lg font-bold mb-1">
+                  {table.status === 'free' ? 'FREE' : 'OCCUPIED'}
+                </div>
+                <div className="text-sm opacity-90">{table.seats} Seats</div>
+              </div>
             </button>
           ))}
         </div>
 
-        {tables.length === 0 && !loading && (
-          <div className="text-center py-20">
-            <p className="text-2xl text-gray-500">No tables found. Ask your manager to add tables.</p>
+        {tables.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-2xl shadow-xl">
+            <p className="text-gray-500 text-lg">No tables found</p>
           </div>
         )}
       </div>

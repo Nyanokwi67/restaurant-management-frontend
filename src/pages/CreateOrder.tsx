@@ -41,18 +41,13 @@ const CreateOrder: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch menu items
       const menuData = await menuItemsAPI.getAll();
-      console.log('Menu items loaded:', menuData);
       setMenuItems(menuData.filter((item: MenuItem) => item.available));
 
-      // Fetch table info
       const tablesData = await tablesAPI.getAll();
       const currentTable = tablesData.find((t: Table) => t.id === parseInt(tableId || '0'));
-      console.log('Current table:', currentTable);
       setTable(currentTable || null);
     } catch (err) {
-      console.error('Error loading data:', err);
       setError('Failed to load menu');
     } finally {
       setLoading(false);
@@ -60,22 +55,16 @@ const CreateOrder: React.FC = () => {
   };
 
   const addItem = (menuItem: MenuItem) => {
-    console.log('Adding item:', menuItem.name);
-    
     const existingItem = orderItems.find((item) => item.id === menuItem.id);
 
     if (existingItem) {
-      // Increase quantity
       setOrderItems(
         orderItems.map((item) =>
           item.id === menuItem.id ? { ...item, quantity: item.quantity + 1 } : item
         )
       );
-      console.log('Increased quantity for:', menuItem.name);
     } else {
-      // Add new item
       setOrderItems([...orderItems, { ...menuItem, quantity: 1 }]);
-      console.log('Added new item:', menuItem.name);
     }
   };
 
@@ -84,12 +73,10 @@ const CreateOrder: React.FC = () => {
     if (!item) return;
 
     if (item.quantity > 1) {
-      // Decrease quantity
       setOrderItems(
         orderItems.map((i) => (i.id === itemId ? { ...i, quantity: i.quantity - 1 } : i))
       );
     } else {
-      // Remove item completely
       setOrderItems(orderItems.filter((i) => i.id !== itemId));
     }
   };
@@ -131,12 +118,10 @@ const CreateOrder: React.FC = () => {
         status: 'open',
       };
 
-      console.log('Saving order:', orderData);
       await ordersAPI.create(orderData);
       alert('Order created successfully!');
       navigate('/orders');
     } catch (err) {
-      console.error('Error saving order:', err);
       alert('Failed to create order');
     }
   };
@@ -170,7 +155,7 @@ const CreateOrder: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-                <span className="text-2xl">🍽️</span>
+                <span className="text-xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Create Order</h1>
@@ -212,9 +197,8 @@ const CreateOrder: React.FC = () => {
           {/* Menu Items Section */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <h2 className="text-3xl font-black text-gray-900 mb-4">Menu Items 🍔</h2>
+              <h2 className="text-3xl font-black text-gray-900 mb-4">Menu Items</h2>
 
-              {/* Search Bar */}
               <input
                 type="text"
                 placeholder="Search menu..."
@@ -223,7 +207,6 @@ const CreateOrder: React.FC = () => {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none mb-4"
               />
 
-              {/* Category Filters */}
               <div className="flex gap-2 flex-wrap mb-4">
                 {categories.map((category) => (
                   <button
@@ -241,7 +224,6 @@ const CreateOrder: React.FC = () => {
               </div>
             </div>
 
-            {/* Menu Items Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredMenuItems.map((item) => (
                 <div
@@ -319,7 +301,7 @@ const CreateOrder: React.FC = () => {
                             }}
                             className="ml-2 w-8 h-8 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center justify-center"
                           >
-                            🗑️
+                            ×
                           </button>
                         </div>
                       </div>

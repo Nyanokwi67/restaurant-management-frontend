@@ -11,8 +11,8 @@ const About: React.FC = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
-                <span className="text-3xl">🍽️</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-2xl font-black text-gray-900">Miriam's Restaurant</h1>
@@ -72,9 +72,7 @@ const About: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           {/* Mission */}
           <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200 transform hover:scale-105 transition duration-300">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">🎯</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-6"></div>
             <h3 className="text-3xl font-black text-gray-900 mb-4">Our Mission</h3>
             <p className="text-gray-600 leading-relaxed text-lg">
               To provide restaurant owners and staff with powerful, intuitive tools that simplify 
@@ -85,9 +83,7 @@ const About: React.FC = () => {
 
           {/* Vision */}
           <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200 transform hover:scale-105 transition duration-300">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">🚀</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-6"></div>
             <h3 className="text-3xl font-black text-gray-900 mb-4">Our Vision</h3>
             <p className="text-gray-600 leading-relaxed text-lg">
               To become the leading restaurant management solution, empowering businesses of all 
@@ -102,9 +98,7 @@ const About: React.FC = () => {
           <h3 className="text-4xl font-black text-gray-900 mb-8 text-center">Why Choose Us?</h3>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                <span className="text-5xl">✨</span>
-              </div>
+              <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mx-auto mb-4"></div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Easy to Use</h4>
               <p className="text-gray-600">
                 Intuitive interface designed for quick learning. Get your staff up and running in minutes.
@@ -112,9 +106,7 @@ const About: React.FC = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                <span className="text-5xl">🔒</span>
-              </div>
+              <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mx-auto mb-4"></div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Secure & Reliable</h4>
               <p className="text-gray-600">
                 Bank-level security with role-based access control. Your data is safe with us.
@@ -122,9 +114,7 @@ const About: React.FC = () => {
             </div>
 
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                <span className="text-5xl">⚡</span>
-              </div>
+              <div className="h-1 w-20 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mx-auto mb-4"></div>
               <h4 className="text-xl font-bold text-gray-900 mb-3">Lightning Fast</h4>
               <p className="text-gray-600">
                 Real-time updates and instant responses. No lag, no waiting, just pure efficiency.

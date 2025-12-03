@@ -114,7 +114,7 @@ const OrderDetails: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-                <span className="text-2xl">🍽️</span>
+                <span className="text-xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Order Details</h1>
@@ -177,7 +177,7 @@ const OrderDetails: React.FC = () => {
               {order.status === 'paid' && order.paymentMethod && (
                 <div className="mt-4 p-3 bg-green-50 border-2 border-green-200 rounded-lg">
                   <p className="text-green-700 font-semibold">
-                    💳 Payment Method: {order.paymentMethod.toUpperCase()}
+                    Payment Method: {order.paymentMethod.toUpperCase()}
                   </p>
                 </div>
               )}
@@ -231,7 +231,7 @@ const OrderDetails: React.FC = () => {
                     disabled={processing}
                     className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    💵 Cash
+                    Cash
                   </button>
 
                   <button
@@ -239,7 +239,7 @@ const OrderDetails: React.FC = () => {
                     disabled={processing}
                     className="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold rounded-xl hover:from-green-700 hover:to-green-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    📱 M-Pesa
+                    M-Pesa
                   </button>
 
                   <button
@@ -247,7 +247,7 @@ const OrderDetails: React.FC = () => {
                     disabled={processing}
                     className="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    💳 Card
+                    Card
                   </button>
 
                   {processing && (
@@ -258,7 +258,7 @@ const OrderDetails: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <div className="text-6xl mb-4">✅</div>
+                  <div className="text-6xl mb-4">✓</div>
                   <p className="text-2xl font-bold text-green-700 mb-2">Payment Complete</p>
                   <p className="text-gray-600">
                     Paid via {order.paymentMethod?.toUpperCase()}

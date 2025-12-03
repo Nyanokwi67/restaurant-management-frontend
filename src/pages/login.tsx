@@ -34,7 +34,7 @@ const Login: React.FC = () => {
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-500 to-red-600 p-8 text-white text-center">
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="text-5xl">🍽️</span>
+            <span className="text-4xl font-black text-orange-600">MR</span>
           </div>
           <h1 className="text-3xl font-black mb-2">Miriam's Restaurant</h1>
           <p className="text-orange-100 font-semibold">Staff Login Portal</p>

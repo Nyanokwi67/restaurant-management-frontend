@@ -11,8 +11,8 @@ const Services: React.FC = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
-                <span className="text-3xl">🍽️</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-2xl font-black text-gray-900">Miriam's Restaurant</h1>
@@ -71,9 +71,7 @@ const Services: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {/* Feature 1 */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">👥</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Role Management</h3>
             <p className="text-gray-600 leading-relaxed">
               Separate access levels for Admins, Managers, and Waiters. Secure authentication with role-based permissions.
@@ -82,9 +80,7 @@ const Services: React.FC = () => {
 
           {/* Feature 2 */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">📊</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Real-Time Tracking</h3>
             <p className="text-gray-600 leading-relaxed">
               Monitor orders, track expenses, manage inventory, and view sales reports in real-time.
@@ -93,9 +89,7 @@ const Services: React.FC = () => {
 
           {/* Feature 3 */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">💰</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Payment Processing</h3>
             <p className="text-gray-600 leading-relaxed">
               Accept multiple payment methods: Cash, M-Pesa, and Card. Track all transactions securely.
@@ -104,9 +98,7 @@ const Services: React.FC = () => {
 
           {/* Feature 4 */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">🍔</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Menu Management</h3>
             <p className="text-gray-600 leading-relaxed">
               Easy menu updates, pricing changes, and availability tracking. Organize by categories.
@@ -115,9 +107,7 @@ const Services: React.FC = () => {
 
           {/* Feature 5 */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">🪑</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Table Management</h3>
             <p className="text-gray-600 leading-relaxed">
               Track table occupancy, assign waiters, and manage seating efficiently.
@@ -126,9 +116,7 @@ const Services: React.FC = () => {
 
           {/* Feature 6 */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
-              <span className="text-4xl">📈</span>
-            </div>
+            <div className="h-1 w-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Financial Reports</h3>
             <p className="text-gray-600 leading-relaxed">
               Generate daily, weekly, and monthly reports. Track profit margins and expense approvals.
@@ -144,7 +132,9 @@ const Services: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-6">
             {/* Admin */}
             <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-105 transition">
-              <div className="text-5xl mb-4">👨‍💼</div>
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl font-black text-purple-600">A</span>
+              </div>
               <h3 className="text-2xl font-bold mb-3">Admin</h3>
               <ul className="text-left space-y-2 text-purple-100">
                 <li>• Manage all users</li>
@@ -156,7 +146,9 @@ const Services: React.FC = () => {
 
             {/* Manager */}
             <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-105 transition">
-              <div className="text-5xl mb-4">👔</div>
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl font-black text-blue-600">M</span>
+              </div>
               <h3 className="text-2xl font-bold mb-3">Manager</h3>
               <ul className="text-left space-y-2 text-blue-100">
                 <li>• Manage menu & tables</li>
@@ -168,7 +160,9 @@ const Services: React.FC = () => {
 
             {/* Waiter */}
             <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-105 transition">
-              <div className="text-5xl mb-4">👨‍🍳</div>
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl font-black text-green-600">W</span>
+              </div>
               <h3 className="text-2xl font-bold mb-3">Waiter</h3>
               <ul className="text-left space-y-2 text-green-100">
                 <li>• Take customer orders</li>

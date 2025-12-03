@@ -1,35 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usersAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-
-type FormData = {
-  username: string;
-  password: string;
-  name: string;
-  role: 'admin' | 'manager' | 'waiter';
-};
+import { usersAPI } from '../services/api';
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
+    name: '',
     username: '',
     password: '',
-    name: '',
     role: 'waiter',
+    active: true,
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  // Only admins can register new users
-  React.useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -39,93 +26,133 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
-    setSuccess(false);
 
     try {
-      await usersAPI.createUser({ ...formData, active: true });
-      setSuccess(true);
-      setFormData({ username: '', password: '', name: '', role: 'waiter' });
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
+      await usersAPI.createUser(formData);
+      setSuccess('User created successfully!');
+      setFormData({
+        name: '',
+        username: '',
+        password: '',
+        role: 'waiter',
+        active: true,
+      });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error creating user');
+      setError(err.response?.data?.message || 'Failed to create user');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 flex items-center justify-center py-12 px-4">
-      <div className="flex flex-col lg:flex-row items-center max-w-6xl w-full space-y-8 lg:space-y-0 lg:space-x-12">
-        {/* Image Section */}
-        <div className="lg:w-1/2 w-full">
-          <img 
-            src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=800&fit=crop" 
-            alt="Register" 
-            className="w-full h-auto object-cover rounded-3xl shadow-2xl"
-          />
-        </div>
-
-        {/* Form Section */}
-        <div className="lg:w-1/2 w-full">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl mb-4">
-                <span className="text-3xl">👤</span>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      {/* Navigation */}
+      <nav className="bg-white shadow-lg border-b-4 border-orange-500">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                <span className="text-xl font-black text-white">MR</span>
               </div>
-              <h2 className="text-4xl font-black text-gray-900 mb-2">Create User Account</h2>
-              <p className="text-gray-600">Add a new staff member to the system</p>
-            </div>
-
-            <form className="space-y-5" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
+                <h1 className="text-xl font-black text-gray-900">Register Staff</h1>
+                <p className="text-xs text-orange-600 font-semibold">Admin Panel</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold"
+              >
+                Dashboard
+              </button>
+              <div className="text-right">
+                <p className="text-sm font-bold text-gray-900">{user?.name}</p>
+                <p className="text-xs text-gray-500">@{user?.username}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mx-auto px-6 py-12">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
+            <h2 className="text-3xl font-black text-gray-900 mb-2">Create New User</h2>
+            <p className="text-gray-600 mb-6">Add a new staff member to the system</p>
+
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6 text-green-700">
+                {success}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
                 <input
-                  name="name"
                   type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
                   placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Username *</label>
                 <input
-                  name="username"
                   type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
                   required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
                   placeholder="johndoe"
-                  value={formData.username}
-                  onChange={handleChange}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Password *</label>
                 <input
-                  name="password"
                   type="password"
-                  required
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
-                  placeholder="••••••••"
+                  name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
+                  placeholder="Enter password"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Role</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Role *</label>
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
+                  required
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
                 >
                   <option value="waiter">Waiter</option>
@@ -134,35 +161,14 @@ const Register: React.FC = () => {
                 </select>
               </div>
 
-              {error && (
-                <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3 text-red-700 text-sm">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="bg-green-50 border-2 border-green-200 rounded-xl p-3 text-green-700 text-sm">
-                  User created successfully! Redirecting...
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 rounded-xl hover:from-orange-600 hover:to-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating User...' : 'Create User'}
               </button>
             </form>
-
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-sm text-gray-600 hover:text-orange-600 font-semibold"
-              >
-                ← Back to Dashboard
-              </button>
-            </div>
           </div>
         </div>
       </div>

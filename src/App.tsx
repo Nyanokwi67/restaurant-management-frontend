@@ -10,7 +10,7 @@ import Register from './pages/Register';
 import Tables from './pages/tables';
 import Orders from './pages/orders';
 import CreateOrder from './pages/CreateOrder';
-import OrderDetails from './pages/OerderDetails';
+import OrderDetails from './pages/OrderDetails';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {

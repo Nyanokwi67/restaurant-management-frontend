@@ -11,8 +11,8 @@ const Home: React.FC = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
-                <span className="text-3xl">🍽️</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-2xl font-black text-gray-900">Miriam's Restaurant</h1>
@@ -78,22 +78,22 @@ const Home: React.FC = () => {
 
         {/* Quick Info Cards */}
         <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 text-center transform hover:scale-105 transition">
-            <div className="text-5xl mb-4">⚡</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Fast & Efficient</h3>
-            <p className="text-gray-600">Process orders in seconds with our intuitive interface</p>
+          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div className="h-1 w-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-6"></div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Fast & Efficient</h3>
+            <p className="text-gray-600 leading-relaxed">Process orders in seconds with our intuitive interface</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 text-center transform hover:scale-105 transition">
-            <div className="text-5xl mb-4">🔒</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Secure Access</h3>
-            <p className="text-gray-600">Role-based permissions keep your data protected</p>
+          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div className="h-1 w-20 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full mb-6"></div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Secure Access</h3>
+            <p className="text-gray-600 leading-relaxed">Role-based permissions keep your data protected</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 text-center transform hover:scale-105 transition">
-            <div className="text-5xl mb-4">📊</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Real-Time Reports</h3>
-            <p className="text-gray-600">Track sales, expenses, and performance instantly</p>
+          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div className="h-1 w-20 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mb-6"></div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Real-Time Reports</h3>
+            <p className="text-gray-600 leading-relaxed">Track sales, expenses, and performance instantly</p>
           </div>
         </div>
 
@@ -126,10 +126,7 @@ const Home: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-8 mb-6">
             {/* Brand Section */}
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-3xl">🍽️</span>
-                <h3 className="text-xl font-bold">Miriam's Restaurant</h3>
-              </div>
+              <h3 className="text-xl font-bold mb-4">Miriam's Restaurant</h3>
               <p className="text-gray-400 text-sm">
                 Modern restaurant management system built for efficiency and ease of use.
               </p>
@@ -186,9 +183,9 @@ const Home: React.FC = () => {
             <div>
               <h4 className="text-lg font-bold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>📧 info@miriamsrestaurant.com</li>
-                <li>📞 +254 700 000 000</li>
-                <li>📍 Nairobi, Kenya</li>
+                <li>Email: info@miriamsrestaurant.com</li>
+                <li>Phone: +254 700 000 000</li>
+                <li>Location: Nairobi, Kenya</li>
               </ul>
             </div>
           </div>

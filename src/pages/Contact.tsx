@@ -19,11 +19,9 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
     console.log('Form submitted:', formData);
     setSubmitted(true);
     
-    // Reset form after 3 seconds
     setTimeout(() => {
       setSubmitted(false);
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
@@ -37,8 +35,8 @@ const Contact: React.FC = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
-                <span className="text-3xl">🍽️</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-2xl font-black text-gray-900">Miriam's Restaurant</h1>
@@ -101,7 +99,7 @@ const Contact: React.FC = () => {
             
             {submitted ? (
               <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center">
-                <div className="text-5xl mb-4">✅</div>
+                <div className="text-5xl mb-4">✓</div>
                 <h4 className="text-2xl font-bold text-green-700 mb-2">Message Sent!</h4>
                 <p className="text-green-600">Thank you for contacting us. We'll get back to you soon!</p>
               </div>
@@ -185,49 +183,31 @@ const Contact: React.FC = () => {
           <div className="space-y-6">
             {/* Contact Cards */}
             <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl">📧</span>
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">Email Us</h4>
-                  <p className="text-gray-600 mb-2">Send us an email anytime!</p>
-                  <a href="mailto:info@miriamsrestaurant.com" className="text-orange-600 font-semibold hover:text-orange-700">
-                    info@miriamsrestaurant.com
-                  </a>
-                </div>
-              </div>
+              <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-6"></div>
+              <h4 className="text-xl font-bold text-gray-900 mb-2">Email Us</h4>
+              <p className="text-gray-600 mb-2">Send us an email anytime!</p>
+              <a href="mailto:info@miriamsrestaurant.com" className="text-orange-600 font-semibold hover:text-orange-700">
+                info@miriamsrestaurant.com
+              </a>
             </div>
 
             <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl">📞</span>
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">Call Us</h4>
-                  <p className="text-gray-600 mb-2">Mon-Fri from 8am to 6pm</p>
-                  <a href="tel:+254700000000" className="text-orange-600 font-semibold hover:text-orange-700">
-                    +254 700 000 000
-                  </a>
-                </div>
-              </div>
+              <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-6"></div>
+              <h4 className="text-xl font-bold text-gray-900 mb-2">Call Us</h4>
+              <p className="text-gray-600 mb-2">Mon-Fri from 8am to 6pm</p>
+              <a href="tel:+254700000000" className="text-orange-600 font-semibold hover:text-orange-700">
+                +254 700 000 000
+              </a>
             </div>
 
             <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl">📍</span>
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">Visit Us</h4>
-                  <p className="text-gray-600 mb-2">Come say hello!</p>
-                  <p className="text-orange-600 font-semibold">
-                    Nairobi, Kenya<br />
-                    Westlands, ABC Place
-                  </p>
-                </div>
-              </div>
+              <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-6"></div>
+              <h4 className="text-xl font-bold text-gray-900 mb-2">Visit Us</h4>
+              <p className="text-gray-600 mb-2">Come say hello!</p>
+              <p className="text-orange-600 font-semibold">
+                Nairobi, Kenya<br />
+                Westlands, ABC Place
+              </p>
             </div>
 
             {/* Business Hours */}
@@ -256,6 +236,7 @@ const Contact: React.FC = () => {
           <h3 className="text-4xl font-black text-gray-900 mb-8 text-center">Frequently Asked Questions</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
+              <div className="h-1 w-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-3"></div>
               <h4 className="text-lg font-bold text-gray-900 mb-2">How do I get started?</h4>
               <p className="text-gray-600">
                 Contact us via email or phone, and our team will guide you through the setup process. 
@@ -264,6 +245,7 @@ const Contact: React.FC = () => {
             </div>
 
             <div>
+              <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-3"></div>
               <h4 className="text-lg font-bold text-gray-900 mb-2">Is training provided?</h4>
               <p className="text-gray-600">
                 Yes! We provide comprehensive training for all staff members, ensuring everyone 
@@ -272,6 +254,7 @@ const Contact: React.FC = () => {
             </div>
 
             <div>
+              <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-3"></div>
               <h4 className="text-lg font-bold text-gray-900 mb-2">What support is available?</h4>
               <p className="text-gray-600">
                 We offer 24/7 email support and phone support during business hours. 
@@ -280,6 +263,7 @@ const Contact: React.FC = () => {
             </div>
 
             <div>
+              <div className="h-1 w-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-3"></div>
               <h4 className="text-lg font-bold text-gray-900 mb-2">Can I customize the system?</h4>
               <p className="text-gray-600">
                 Absolutely! Our system is highly customizable to match your restaurant's specific 
