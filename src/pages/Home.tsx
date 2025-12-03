@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import heroRestaurant from '../assets/images/hero-restaurant.jpg';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -7,11 +8,11 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-100 to-red-100">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-lg border-b-4 border-orange-500">
+      <nav className="bg-white shadow-lg border-b-4 border-orange-500 relative z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
                 <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
@@ -55,27 +56,44 @@ const Home: React.FC = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Streamline Your<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
-              Restaurant Operations
-            </span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Complete point-of-sale system for managing orders, tables, inventory, and staff. 
-            Built for efficiency and ease of use.
-          </p>
-          <button
-            onClick={() => navigate('/login')}
-            className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white text-lg font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition transform hover:scale-105 shadow-2xl"
-          >
-            Get Started →
-          </button>
+      {/* Hero Section with Image */}
+      <div className="relative">
+        <div className="relative h-[600px] overflow-hidden">
+          <img
+            src={heroRestaurant}
+            alt="Restaurant Interior"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+          
+          {/* Hero Content */}
+          <div className="absolute inset-0 flex items-center">
+            <div className="container mx-auto px-6">
+              <div className="max-w-2xl">
+                <h2 className="text-6xl font-black text-white mb-6 leading-tight">
+                  Streamline Your<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
+                    Restaurant Operations
+                  </span>
+                </h2>
+                <p className="text-xl text-gray-200 mb-8">
+                  Complete point-of-sale system for managing orders, tables, inventory, and staff. 
+                  Built for efficiency and ease of use.
+                </p>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white text-lg font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition transform hover:scale-105 shadow-2xl"
+                >
+                  Get Started →
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
+      {/* Content Section */}
+      <div className="container mx-auto px-6 py-16">
         {/* Quick Info Cards */}
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">

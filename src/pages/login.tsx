@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../services/api';
+import loginBg from '../assets/images/login-bg.jpg';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -29,8 +30,19 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 flex items-center justify-center p-6">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div className="min-h-screen relative flex items-center justify-center p-6">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img
+          src={loginBg}
+          alt="Restaurant Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40"></div>
+      </div>
+
+      {/* Login Card */}
+      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-500 to-red-600 p-8 text-white text-center">
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">

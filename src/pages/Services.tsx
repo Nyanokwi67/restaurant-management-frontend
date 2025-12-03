@@ -1,5 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import foodPasta from '../assets/images/food-pasta.jpg';
+import foodDessert from '../assets/images/food-dessert.jpg';
+import foodBurger from '../assets/images/food-burger.jpg';
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
@@ -67,36 +70,63 @@ const Services: React.FC = () => {
           </p>
         </div>
 
-        {/* Features Grid */}
+        {/* Features Grid with Food Images */}
         <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {/* Feature 1 */}
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Role Management</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Separate access levels for Admins, Managers, and Waiters. Secure authentication with role-based permissions.
-            </p>
+          {/* Feature 1 - With Burger Image */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div className="h-48 overflow-hidden">
+              <img 
+                src={foodBurger} 
+                alt="Menu Management" 
+                className="w-full h-full object-cover hover:scale-110 transition duration-300"
+              />
+            </div>
+            <div className="p-6">
+              <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-4"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Role Management</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Separate access levels for Admins, Managers, and Waiters. Secure authentication with role-based permissions.
+              </p>
+            </div>
           </div>
 
-          {/* Feature 2 */}
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Real-Time Tracking</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Monitor orders, track expenses, manage inventory, and view sales reports in real-time.
-            </p>
+          {/* Feature 2 - With Pasta Image */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div className="h-48 overflow-hidden">
+              <img 
+                src={foodPasta} 
+                alt="Real-Time Tracking" 
+                className="w-full h-full object-cover hover:scale-110 transition duration-300"
+              />
+            </div>
+            <div className="p-6">
+              <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Real-Time Tracking</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Monitor orders, track expenses, manage inventory, and view sales reports in real-time.
+              </p>
+            </div>
           </div>
 
-          {/* Feature 3 */}
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Payment Processing</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Accept multiple payment methods: Cash, M-Pesa, and Card. Track all transactions securely.
-            </p>
+          {/* Feature 3 - With Dessert Image */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+            <div className="h-48 overflow-hidden">
+              <img 
+                src={foodDessert} 
+                alt="Payment Processing" 
+                className="w-full h-full object-cover hover:scale-110 transition duration-300"
+              />
+            </div>
+            <div className="p-6">
+              <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Payment Processing</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Accept multiple payment methods: Cash, M-Pesa, and Card. Track all transactions securely.
+              </p>
+            </div>
           </div>
 
-          {/* Feature 4 */}
+          {/* Feature 4 - No Image */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
             <div className="h-1 w-20 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Menu Management</h3>
@@ -105,7 +135,7 @@ const Services: React.FC = () => {
             </p>
           </div>
 
-          {/* Feature 5 */}
+          {/* Feature 5 - No Image */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
             <div className="h-1 w-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Table Management</h3>
@@ -114,7 +144,7 @@ const Services: React.FC = () => {
             </p>
           </div>
 
-          {/* Feature 6 */}
+          {/* Feature 6 - No Image */}
           <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
             <div className="h-1 w-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6"></div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Financial Reports</h3>
