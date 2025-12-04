@@ -6,9 +6,9 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-100 to-red-100">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-lg border-b-4 border-orange-500 relative z-10">
+    <div className="min-h-screen">
+      {/* Navigation Bar - Absolute positioning over hero */}
+      <nav className="absolute top-0 left-0 right-0 z-20 bg-white/95 backdrop-blur shadow-lg border-b-4 border-orange-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -56,90 +56,100 @@ const Home: React.FC = () => {
         </div>
       </nav>
 
-      {/* Hero Section with Image */}
-      <div className="relative">
-        <div className="relative h-[600px] overflow-hidden">
+      {/* Full Screen Hero Section */}
+      <div className="relative h-screen">
+        <div className="absolute inset-0">
           <img
             src={heroRestaurant}
             alt="Restaurant Interior"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
-          
-          {/* Hero Content */}
-          <div className="absolute inset-0 flex items-center">
-            <div className="container mx-auto px-6">
-              <div className="max-w-2xl">
-                <h2 className="text-6xl font-black text-white mb-6 leading-tight">
-                  Streamline Your<br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
-                    Restaurant Operations
-                  </span>
-                </h2>
-                <p className="text-xl text-gray-200 mb-8">
-                  Complete point-of-sale system for managing orders, tables, inventory, and staff. 
-                  Built for efficiency and ease of use.
-                </p>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white text-lg font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition transform hover:scale-105 shadow-2xl"
-                >
-                  Get Started →
-                </button>
-              </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
+        </div>
+        
+        {/* Hero Content */}
+        <div className="relative h-full flex items-center">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl">
+              <h2 className="text-7xl font-black text-white mb-6 leading-tight">
+                Streamline Your<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
+                  Restaurant Operations
+                </span>
+              </h2>
+              <p className="text-2xl text-gray-200 mb-10 leading-relaxed">
+                Complete point-of-sale system for managing orders, tables, inventory, and staff. 
+                Built for efficiency and ease of use.
+              </p>
+              <button
+                onClick={() => navigate('/login')}
+                className="px-10 py-5 bg-gradient-to-r from-orange-500 to-red-600 text-white text-xl font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition transform hover:scale-105 shadow-2xl"
+              >
+                Get Started →
+              </button>
             </div>
+          </div>
+        </div>
+
+        {/* Scroll Down Indicator */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="text-white text-center">
+            <p className="text-sm font-semibold mb-2">Scroll Down</p>
+            <div className="text-2xl">↓</div>
           </div>
         </div>
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-6 py-16">
-        {/* Quick Info Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Fast & Efficient</h3>
-            <p className="text-gray-600 leading-relaxed">Process orders in seconds with our intuitive interface</p>
+      <div className="bg-gradient-to-br from-amber-50 via-orange-100 to-red-100">
+        <div className="container mx-auto px-6 py-20">
+          {/* Quick Info Cards */}
+          <div className="grid md:grid-cols-3 gap-8 mb-20">
+            <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+              <div className="h-1 w-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-6"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Fast & Efficient</h3>
+              <p className="text-gray-600 leading-relaxed">Process orders in seconds with our intuitive interface</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+              <div className="h-1 w-20 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full mb-6"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Secure Access</h3>
+              <p className="text-gray-600 leading-relaxed">Role-based permissions keep your data protected</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
+              <div className="h-1 w-20 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mb-6"></div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Real-Time Reports</h3>
+              <p className="text-gray-600 leading-relaxed">Track sales, expenses, and performance instantly</p>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Secure Access</h3>
-            <p className="text-gray-600 leading-relaxed">Role-based permissions keep your data protected</p>
-          </div>
-
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Real-Time Reports</h3>
-            <p className="text-gray-600 leading-relaxed">Track sales, expenses, and performance instantly</p>
-          </div>
-        </div>
-
-        {/* Call to Action Section */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl shadow-2xl p-12 text-white text-center">
-          <h2 className="text-4xl font-black mb-4">Ready to Transform Your Restaurant?</h2>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
-            Join restaurants already using Miriam's Restaurant Management System to streamline their operations
-          </p>
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => navigate('/services')}
-              className="px-8 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-lg"
-            >
-              View Services
-            </button>
-            <button
-              onClick={() => navigate('/about')}
-              className="px-8 py-3 bg-orange-700 text-white font-bold rounded-xl hover:bg-orange-800 transition shadow-lg"
-            >
-              Learn More
-            </button>
+          {/* Call to Action Section */}
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl shadow-2xl p-12 text-white text-center">
+            <h2 className="text-4xl font-black mb-4">Ready to Transform Your Restaurant?</h2>
+            <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+              Join restaurants already using Miriam's Restaurant Management System to streamline their operations
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => navigate('/services')}
+                className="px-8 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-lg"
+              >
+                View Services
+              </button>
+              <button
+                onClick={() => navigate('/about')}
+                className="px-8 py-3 bg-orange-700 text-white font-bold rounded-xl hover:bg-orange-800 transition shadow-lg"
+              >
+                Learn More
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-24">
+      <footer className="bg-gray-900 text-white py-8">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 mb-6">
             {/* Brand Section */}
