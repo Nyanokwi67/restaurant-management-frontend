@@ -3,7 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usersAPI, menuItemsAPI, tablesAPI, ordersAPI } from '../services/api';
 
-type Tab = 'users' | 'menu' | 'tables' | 'orders';
+// Import all menu images
+import drinkSoda from '../assets/images/drink-soda.jpg';
+import drinkWater from '../assets/images/drink-water.jpg';
+import drinkJuice from '../assets/images/drink-juice.jpg';
+import drinkCoffee from '../assets/images/drink-coffee.jpg';
+import drinkTea from '../assets/images/drink-tea.jpg';
+
+import mealBurger from '../assets/images/meal-burger.jpg';
+import mealPizza from '../assets/images/meal-pizza.jpg';
+import mealPasta from '../assets/images/meal-pasta.jpg';
+import mealSalad from '../assets/images/meal-salad.jpg';
+import mealSteak from '../assets/images/meal-steak.jpg';
+import mealChicken from '../assets/images/meal-chicken.jpg';
+import mealFish from '../assets/images/meal-fish.jpg';
+
+import dessertIcecream from '../assets/images/dessert-icecream.jpg';
+import dessertCake from '../assets/images/dessert-cake.jpg';
+import dessertCookies from '../assets/images/dessert-cookies.jpg';
+import dessertCheesecake from '../assets/images/dessert-cheesecake.jpg';
+import dessertBrownies from '../assets/images/dessert-brownies.jpg';
 
 interface User {
   id: number;
@@ -34,27 +53,49 @@ interface Order {
   waiterName: string;
   total: number;
   status: string;
+  paymentMethod?: string;
   timestamp: string;
 }
 
 const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'menu' | 'tables' | 'orders'>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [tables, setTables] = useState<Table[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
+
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
+  const [userForm, setUserForm] = useState({ name: '', username: '', password: '', role: 'waiter', active: true });
+  const [menuForm, setMenuForm] = useState({ name: '', price: 0, category: 'Drinks', available: true });
+  const [tableForm, setTableForm] = useState({ number: 1, seats: 2, status: 'free' });
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Form states
-  const [userForm, setUserForm] = useState({ name: '', username: '', password: '', role: 'waiter', active: true });
-  const [menuForm, setMenuForm] = useState({ name: '', price: 0, category: 'Meals', available: true });
-  const [tableForm, setTableForm] = useState({ number: 0, seats: 2, status: 'free' });
+  // Map menu item names to images
+  const menuImages: { [key: string]: string } = {
+    'Soda': drinkSoda,
+    'Water': drinkWater,
+    'Juice': drinkJuice,
+    'Coffee': drinkCoffee,
+    'Tea': drinkTea,
+    'Burger': mealBurger,
+    'Pizza': mealPizza,
+    'Pasta': mealPasta,
+    'Salad': mealSalad,
+    'Steak': mealSteak,
+    'Chicken': mealChicken,
+    'Fish': mealFish,
+    'Ice Cream': dessertIcecream,
+    'Cake': dessertCake,
+    'Cookies': dessertCookies,
+    'Cheesecake': dessertCheesecake,
+    'Brownies': dessertBrownies,
+  };
 
   useEffect(() => {
     if (user?.role !== 'admin') {
@@ -83,7 +124,7 @@ const AdminPanel: React.FC = () => {
         setOrders(data);
       }
     } catch (err) {
-      console.error('Failed to fetch data:', err);
+      console.error('Error fetching data:', err);
     } finally {
       setLoading(false);
     }
@@ -94,124 +135,12 @@ const AdminPanel: React.FC = () => {
     navigate('/login');
   };
 
-  // User CRUD
-  const handleCreateUser = async () => {
-    try {
-      await usersAPI.createUser(userForm);
-      alert('User created successfully!');
-      setShowModal(false);
-      fetchData();
-      setUserForm({ name: '', username: '', password: '', role: 'waiter', active: true });
-    } catch (err) {
-      alert('Failed to create user');
-    }
-  };
-
-  const handleUpdateUser = async () => {
-    try {
-      await usersAPI.updateUser(selectedItem.id, userForm);
-      alert('User updated successfully!');
-      setShowModal(false);
-      fetchData();
-      setUserForm({ name: '', username: '', password: '', role: 'waiter', active: true });
-    } catch (err) {
-      alert('Failed to update user');
-    }
-  };
-
-  const handleDeleteUser = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    try {
-      await usersAPI.deleteUser(id);
-      alert('User deleted successfully!');
-      fetchData();
-    } catch (err) {
-      alert('Failed to delete user');
-    }
-  };
-
-  // Menu Item CRUD
-  const handleCreateMenuItem = async () => {
-    try {
-      await menuItemsAPI.create(menuForm);
-      alert('Menu item created successfully!');
-      setShowModal(false);
-      fetchData();
-      setMenuForm({ name: '', price: 0, category: 'Meals', available: true });
-    } catch (err) {
-      alert('Failed to create menu item');
-    }
-  };
-
-  const handleUpdateMenuItem = async () => {
-    try {
-      await menuItemsAPI.update(selectedItem.id, menuForm);
-      alert('Menu item updated successfully!');
-      setShowModal(false);
-      fetchData();
-      setMenuForm({ name: '', price: 0, category: 'Meals', available: true });
-    } catch (err) {
-      alert('Failed to update menu item');
-    }
-  };
-
-  const handleDeleteMenuItem = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this menu item?')) return;
-    try {
-      await menuItemsAPI.delete(id);
-      alert('Menu item deleted successfully!');
-      fetchData();
-    } catch (err) {
-      alert('Failed to delete menu item');
-    }
-  };
-
-  // Table CRUD
-  const handleCreateTable = async () => {
-    try {
-      await tablesAPI.create(tableForm);
-      alert('Table created successfully!');
-      setShowModal(false);
-      fetchData();
-      setTableForm({ number: 0, seats: 2, status: 'free' });
-    } catch (err) {
-      alert('Failed to create table');
-    }
-  };
-
-  const handleUpdateTable = async () => {
-    try {
-      await tablesAPI.update(selectedItem.id, tableForm);
-      alert('Table updated successfully!');
-      setShowModal(false);
-      fetchData();
-      setTableForm({ number: 0, seats: 2, status: 'free' });
-    } catch (err) {
-      alert('Failed to update table');
-    }
-  };
-
-  const handleDeleteTable = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this table?')) return;
-    try {
-      await tablesAPI.delete(id);
-      alert('Table deleted successfully!');
-      fetchData();
-    } catch (err) {
-      alert('Failed to delete table');
-    }
-  };
-
   const openCreateModal = () => {
     setModalMode('create');
     setSelectedItem(null);
-    if (activeTab === 'users') {
-      setUserForm({ name: '', username: '', password: '', role: 'waiter', active: true });
-    } else if (activeTab === 'menu') {
-      setMenuForm({ name: '', price: 0, category: 'Meals', available: true });
-    } else if (activeTab === 'tables') {
-      setTableForm({ number: 0, seats: 2, status: 'free' });
-    }
+    setUserForm({ name: '', username: '', password: '', role: 'waiter', active: true });
+    setMenuForm({ name: '', price: 0, category: 'Drinks', available: true });
+    setTableForm({ number: 1, seats: 2, status: 'free' });
     setShowModal(true);
   };
 
@@ -228,9 +157,258 @@ const AdminPanel: React.FC = () => {
     setShowModal(true);
   };
 
+  const handleCreate = async () => {
+    try {
+      if (activeTab === 'users') {
+        await usersAPI.createUser(userForm);
+      } else if (activeTab === 'menu') {
+        await menuItemsAPI.create(menuForm);
+      } else if (activeTab === 'tables') {
+        await tablesAPI.create(tableForm);
+      }
+      setShowModal(false);
+      fetchData();
+      alert('Created successfully!');
+    } catch (err) {
+      alert('Failed to create');
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      if (activeTab === 'users') {
+        const updateData = userForm.password ? userForm : { ...userForm, password: undefined };
+        await usersAPI.updateUser(selectedItem.id, updateData);
+      } else if (activeTab === 'menu') {
+        await menuItemsAPI.update(selectedItem.id, menuForm);
+      } else if (activeTab === 'tables') {
+        await tablesAPI.update(selectedItem.id, tableForm);
+      }
+      setShowModal(false);
+      fetchData();
+      alert('Updated successfully!');
+    } catch (err) {
+      alert('Failed to update');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this item?')) return;
+
+    try {
+      if (activeTab === 'users') {
+        await usersAPI.deleteUser(id);
+      } else if (activeTab === 'menu') {
+        await menuItemsAPI.delete(id);
+      } else if (activeTab === 'tables') {
+        await tablesAPI.delete(id);
+      }
+      fetchData();
+      alert('Deleted successfully!');
+    } catch (err) {
+      alert('Failed to delete');
+    }
+  };
+
+  const renderUsersTable = () => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Name</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Username</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Role</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Status</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id} className="border-b hover:bg-gray-50">
+              <td className="px-4 py-3">{user.id}</td>
+              <td className="px-4 py-3 font-semibold">{user.name}</td>
+              <td className="px-4 py-3">{user.username}</td>
+              <td className="px-4 py-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                  user.role === 'manager' ? 'bg-blue-100 text-blue-700' :
+                  'bg-green-100 text-green-700'
+                }`}>
+                  {user.role.toUpperCase()}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  user.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {user.active ? 'ACTIVE' : 'INACTIVE'}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => openEditModal(user)}
+                  className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2 text-sm font-semibold"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(user.id)}
+                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderMenuTable = () => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Image</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Name</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Price</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Category</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Available</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {menuItems.map((item) => (
+            <tr key={item.id} className="border-b hover:bg-gray-50">
+              <td className="px-4 py-3">
+                {menuImages[item.name] && (
+                  <img
+                    src={menuImages[item.name]}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover rounded-lg shadow-md"
+                  />
+                )}
+              </td>
+              <td className="px-4 py-3">{item.id}</td>
+              <td className="px-4 py-3 font-semibold">{item.name}</td>
+              <td className="px-4 py-3 text-orange-600 font-bold">KES {item.price}</td>
+              <td className="px-4 py-3">{item.category}</td>
+              <td className="px-4 py-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  item.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {item.available ? 'YES' : 'NO'}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => openEditModal(item)}
+                  className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2 text-sm font-semibold"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderTablesTable = () => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Table Number</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Seats</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Status</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tables.map((table) => (
+            <tr key={table.id} className="border-b hover:bg-gray-50">
+              <td className="px-4 py-3">{table.id}</td>
+              <td className="px-4 py-3 font-semibold">Table {table.number}</td>
+              <td className="px-4 py-3">{table.seats}</td>
+              <td className="px-4 py-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  table.status === 'free' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                }`}>
+                  {table.status.toUpperCase()}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => openEditModal(table)}
+                  className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2 text-sm font-semibold"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(table.id)}
+                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderOrdersTable = () => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Table</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Waiter</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Total</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Status</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Payment</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.id} className="border-b hover:bg-gray-50">
+              <td className="px-4 py-3">{order.id}</td>
+              <td className="px-4 py-3 font-semibold">Table {order.tableNumber}</td>
+              <td className="px-4 py-3">{order.waiterName}</td>
+              <td className="px-4 py-3 text-orange-600 font-bold">KES {order.total.toLocaleString()}</td>
+              <td className="px-4 py-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  order.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                }`}>
+                  {order.status.toUpperCase()}
+                </span>
+              </td>
+              <td className="px-4 py-3">{order.paymentMethod || '-'}</td>
+              <td className="px-4 py-3 text-sm">{new Date(order.timestamp).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Navigation */}
       <nav className="bg-white shadow-lg border-b-4 border-purple-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -240,19 +418,19 @@ const AdminPanel: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Admin Panel</h1>
-                <p className="text-xs text-purple-600 font-semibold">Full System Control</p>
+                <p className="text-xs text-purple-600 font-semibold">System Management</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition font-semibold"
               >
                 Dashboard
               </button>
               <div className="text-right">
                 <p className="text-sm font-bold text-gray-900">{user?.name}</p>
-                <p className="text-xs text-gray-500">Admin</p>
+                <p className="text-xs text-gray-500">@{user?.username}</p>
               </div>
               <button
                 onClick={handleLogout}
@@ -266,387 +444,232 @@ const AdminPanel: React.FC = () => {
       </nav>
 
       <div className="container mx-auto px-6 py-8">
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8">
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`px-6 py-3 rounded-xl font-bold transition ${
-              activeTab === 'users'
-                ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Users
-          </button>
-          <button
-            onClick={() => setActiveTab('menu')}
-            className={`px-6 py-3 rounded-xl font-bold transition ${
-              activeTab === 'menu'
-                ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Menu Items
-          </button>
-          <button
-            onClick={() => setActiveTab('tables')}
-            className={`px-6 py-3 rounded-xl font-bold transition ${
-              activeTab === 'tables'
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Tables
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-6 py-3 rounded-xl font-bold transition ${
-              activeTab === 'orders'
-                ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Orders
-          </button>
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-purple-200 sticky top-6">
+              <h3 className="text-lg font-black text-gray-900 mb-4">Sections</h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setActiveTab('users')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    activeTab === 'users'
+                      ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Users
+                </button>
+                <button
+                  onClick={() => setActiveTab('menu')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    activeTab === 'menu'
+                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Menu Items
+                </button>
+                <button
+                  onClick={() => setActiveTab('tables')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    activeTab === 'tables'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Tables
+                </button>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    activeTab === 'orders'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Orders
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-10">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-purple-200">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-black text-gray-900">
+                  {activeTab === 'users' && 'Users Management'}
+                  {activeTab === 'menu' && 'Menu Items Management'}
+                  {activeTab === 'tables' && 'Tables Management'}
+                  {activeTab === 'orders' && 'Orders Overview'}
+                </h2>
+                {activeTab !== 'orders' && (
+                  <button
+                    onClick={openCreateModal}
+                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg"
+                  >
+                    + Create New
+                  </button>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg">Loading...</p>
+                </div>
+              ) : (
+                <>
+                  {activeTab === 'users' && renderUsersTable()}
+                  {activeTab === 'menu' && renderMenuTable()}
+                  {activeTab === 'tables' && renderTablesTable()}
+                  {activeTab === 'orders' && renderOrdersTable()}
+                </>
+              )}
+            </div>
+          </div>
         </div>
-
-        {/* Create Button (not for orders) */}
-        {activeTab !== 'orders' && (
-          <button
-            onClick={openCreateModal}
-            className="mb-6 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg"
-          >
-            + Create New
-          </button>
-        )}
-
-        {/* Content */}
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-2xl font-bold text-gray-700">Loading...</p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-200">
-            {/* Users Table */}
-            {activeTab === 'users' && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left p-4 font-bold">ID</th>
-                      <th className="text-left p-4 font-bold">Name</th>
-                      <th className="text-left p-4 font-bold">Username</th>
-                      <th className="text-left p-4 font-bold">Role</th>
-                      <th className="text-left p-4 font-bold">Status</th>
-                      <th className="text-left p-4 font-bold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((u) => (
-                      <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="p-4">{u.id}</td>
-                        <td className="p-4 font-semibold">{u.name}</td>
-                        <td className="p-4 text-gray-600">{u.username}</td>
-                        <td className="p-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            u.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                            u.role === 'manager' ? 'bg-blue-100 text-blue-700' :
-                            'bg-green-100 text-green-700'
-                          }`}>
-                            {u.role.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            u.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}>
-                            {u.active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => openEditModal(u)}
-                              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(u.id)}
-                              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Menu Items Table */}
-            {activeTab === 'menu' && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left p-4 font-bold">ID</th>
-                      <th className="text-left p-4 font-bold">Name</th>
-                      <th className="text-left p-4 font-bold">Price</th>
-                      <th className="text-left p-4 font-bold">Category</th>
-                      <th className="text-left p-4 font-bold">Available</th>
-                      <th className="text-left p-4 font-bold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {menuItems.map((item) => (
-                      <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="p-4">{item.id}</td>
-                        <td className="p-4 font-semibold">{item.name}</td>
-                        <td className="p-4 text-orange-600 font-bold">KES {item.price}</td>
-                        <td className="p-4 text-gray-600">{item.category}</td>
-                        <td className="p-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            item.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}>
-                            {item.available ? 'Yes' : 'No'}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => openEditModal(item)}
-                              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteMenuItem(item.id)}
-                              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Tables Table */}
-            {activeTab === 'tables' && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left p-4 font-bold">ID</th>
-                      <th className="text-left p-4 font-bold">Table Number</th>
-                      <th className="text-left p-4 font-bold">Seats</th>
-                      <th className="text-left p-4 font-bold">Status</th>
-                      <th className="text-left p-4 font-bold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tables.map((table) => (
-                      <tr key={table.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="p-4">{table.id}</td>
-                        <td className="p-4 font-semibold">Table {table.number}</td>
-                        <td className="p-4 text-gray-600">{table.seats} seats</td>
-                        <td className="p-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            table.status === 'free' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
-                          }`}>
-                            {table.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => openEditModal(table)}
-                              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold text-sm"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteTable(table.id)}
-                              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Orders Table */}
-            {activeTab === 'orders' && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left p-4 font-bold">ID</th>
-                      <th className="text-left p-4 font-bold">Table</th>
-                      <th className="text-left p-4 font-bold">Waiter</th>
-                      <th className="text-left p-4 font-bold">Total</th>
-                      <th className="text-left p-4 font-bold">Status</th>
-                      <th className="text-left p-4 font-bold">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order) => (
-                      <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="p-4">{order.id}</td>
-                        <td className="p-4 font-semibold">Table {order.tableNumber}</td>
-                        <td className="p-4 text-gray-600">{order.waiterName}</td>
-                        <td className="p-4 text-orange-600 font-bold">KES {order.total.toLocaleString()}</td>
-                        <td className="p-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            order.status === 'open' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'
-                          }`}>
-                            {order.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="p-4 text-gray-600 text-sm">{new Date(order.timestamp).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-black text-gray-900 mb-6">
-              {modalMode === 'create' ? 'Create' : 'Edit'} {activeTab === 'users' ? 'User' : activeTab === 'menu' ? 'Menu Item' : 'Table'}
+              {modalMode === 'create' ? 'Create New' : 'Edit'}{' '}
+              {activeTab === 'users' ? 'User' : activeTab === 'menu' ? 'Menu Item' : 'Table'}
             </h2>
 
-            {/* User Form */}
             {activeTab === 'users' && (
               <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={userForm.name}
-                  onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={userForm.username}
-                  onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
-                />
-                {modalMode === 'create' && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
+                  <input
+                    type="text"
+                    value={userForm.name}
+                    onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
+                  <input
+                    type="text"
+                    value={userForm.username}
+                    onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">
+                    Password {modalMode === 'edit' && '(leave blank to keep current)'}
+                  </label>
                   <input
                     type="password"
-                    placeholder="Password"
                     value={userForm.password}
                     onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
                   />
-                )}
-                <select
-                  value={userForm.role}
-                  onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
-                >
-                  <option value="waiter">Waiter</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
-                <label className="flex items-center gap-2">
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Role</label>
+                  <select
+                    value={userForm.role}
+                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                  >
+                    <option value="waiter">Waiter</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={userForm.active}
                     onChange={(e) => setUserForm({ ...userForm, active: e.target.checked })}
                     className="w-5 h-5"
                   />
-                  <span className="font-semibold">Active</span>
-                </label>
+                  <label className="text-sm font-bold text-gray-700">Active</label>
+                </div>
               </div>
             )}
 
-            {/* Menu Item Form */}
             {activeTab === 'menu' && (
               <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Item Name"
-                  value={menuForm.name}
-                  onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                />
-                <input
-                  type="number"
-                  placeholder="Price"
-                  value={menuForm.price}
-                  onChange={(e) => setMenuForm({ ...menuForm, price: parseFloat(e.target.value) })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                />
-                <select
-                  value={menuForm.category}
-                  onChange={(e) => setMenuForm({ ...menuForm, category: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
-                >
-                  <option value="Drinks">Drinks</option>
-                  <option value="Meals">Meals</option>
-                  <option value="Desserts">Desserts</option>
-                </select>
-                <label className="flex items-center gap-2">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
+                  <input
+                    type="text"
+                    value={menuForm.name}
+                    onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Price (KES)</label>
+                  <input
+                    type="number"
+                    value={menuForm.price}
+                    onChange={(e) => setMenuForm({ ...menuForm, price: parseFloat(e.target.value) })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                  <select
+                    value={menuForm.category}
+                    onChange={(e) => setMenuForm({ ...menuForm, category: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                  >
+                    <option value="Drinks">Drinks</option>
+                    <option value="Meals">Meals</option>
+                    <option value="Desserts">Desserts</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={menuForm.available}
                     onChange={(e) => setMenuForm({ ...menuForm, available: e.target.checked })}
                     className="w-5 h-5"
                   />
-                  <span className="font-semibold">Available</span>
-                </label>
+                  <label className="text-sm font-bold text-gray-700">Available</label>
+                </div>
               </div>
             )}
 
-            {/* Table Form */}
             {activeTab === 'tables' && (
               <div className="space-y-4">
-                <input
-                  type="number"
-                  placeholder="Table Number"
-                  value={tableForm.number}
-                  onChange={(e) => setTableForm({ ...tableForm, number: parseInt(e.target.value) })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none"
-                />
-                <input
-                  type="number"
-                  placeholder="Number of Seats"
-                  value={tableForm.seats}
-                  onChange={(e) => setTableForm({ ...tableForm, seats: parseInt(e.target.value) })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none"
-                />
-                <select
-                  value={tableForm.status}
-                  onChange={(e) => setTableForm({ ...tableForm, status: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none"
-                >
-                  <option value="free">Free</option>
-                  <option value="occupied">Occupied</option>
-                </select>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Table Number</label>
+                  <input
+                    type="number"
+                    value={tableForm.number}
+                    onChange={(e) => setTableForm({ ...tableForm, number: parseInt(e.target.value) })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Seats</label>
+                  <input
+                    type="number"
+                    value={tableForm.seats}
+                    onChange={(e) => setTableForm({ ...tableForm, seats: parseInt(e.target.value) })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Status</label>
+                  <select
+                    value={tableForm.status}
+                    onChange={(e) => setTableForm({ ...tableForm, status: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                  >
+                    <option value="free">Free</option>
+                    <option value="occupied">Occupied</option>
+                  </select>
+                </div>
               </div>
             )}
 
-            {/* Modal Buttons */}
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
@@ -655,16 +678,8 @@ const AdminPanel: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  if (activeTab === 'users') {
-                    modalMode === 'create' ? handleCreateUser() : handleUpdateUser();
-                  } else if (activeTab === 'menu') {
-                    modalMode === 'create' ? handleCreateMenuItem() : handleUpdateMenuItem();
-                  } else if (activeTab === 'tables') {
-                    modalMode === 'create' ? handleCreateTable() : handleUpdateTable();
-                  }
-                }}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition"
+                onClick={modalMode === 'create' ? handleCreate : handleUpdate}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg"
               >
                 {modalMode === 'create' ? 'Create' : 'Update'}
               </button>

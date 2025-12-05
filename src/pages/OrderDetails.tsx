@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ordersAPI } from '../services/api';
+import { ordersAPI, mpesaAPI } from '../services/api';
 
 interface OrderItem {
   id: number;
@@ -27,6 +27,9 @@ const OrderDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
+  const [showMpesaModal, setShowMpesaModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [mpesaLoading, setMpesaLoading] = useState(false);
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -54,24 +57,85 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const handlePayment = async (paymentMethod: string) => {
+  const handleCashPayment = async () => {
     if (!order) return;
-
-    if (!confirm(`Process payment via ${paymentMethod}?`)) return;
+    if (!confirm('Process cash payment?')) return;
 
     setProcessing(true);
     try {
       await ordersAPI.update(order.id, {
         status: 'paid',
-        paymentMethod: paymentMethod,
+        paymentMethod: 'cash',
       });
-
-      alert('Payment processed successfully!');
+      alert('Cash payment processed successfully!');
       navigate('/orders');
     } catch (err) {
       alert('Failed to process payment');
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const handleCardPayment = async () => {
+    if (!order) return;
+    if (!confirm('Process card payment?')) return;
+
+    setProcessing(true);
+    try {
+      await ordersAPI.update(order.id, {
+        status: 'paid',
+        paymentMethod: 'card',
+      });
+      alert('Card payment processed successfully!');
+      navigate('/orders');
+    } catch (err) {
+      alert('Failed to process payment');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleMpesaPayment = () => {
+    setShowMpesaModal(true);
+  };
+
+  const processMpesaPayment = async () => {
+    if (!phoneNumber) {
+      alert('Please enter phone number');
+      return;
+    }
+
+    if (!order) return;
+
+    setMpesaLoading(true);
+    try {
+      const response = await mpesaAPI.initiateSTKPush(phoneNumber, order.total, order.id);
+      
+      console.log('M-Pesa Response:', response);
+      
+      if (response.success) {
+        alert('STK Push sent! Customer will receive a payment prompt on their phone. Please wait for customer to complete payment.');
+        setShowMpesaModal(false);
+        setPhoneNumber('');
+        
+        // Simulate payment confirmation (in production, this comes from callback)
+        setTimeout(async () => {
+          const confirmed = confirm('Has the customer completed the M-Pesa payment?');
+          if (confirmed) {
+            await ordersAPI.update(order.id, {
+              status: 'paid',
+              paymentMethod: 'mpesa',
+            });
+            alert('M-Pesa payment confirmed!');
+            navigate('/orders');
+          }
+        }, 5000);
+      }
+    } catch (err: any) {
+      console.error('M-Pesa Error:', err);
+      alert(err.response?.data?.message || 'Failed to initiate M-Pesa payment. Please check phone number and try again.');
+    } finally {
+      setMpesaLoading(false);
     }
   };
 
@@ -227,7 +291,7 @@ const OrderDetails: React.FC = () => {
                   <p className="text-gray-600 mb-4">Select payment method:</p>
 
                   <button
-                    onClick={() => handlePayment('cash')}
+                    onClick={handleCashPayment}
                     disabled={processing}
                     className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -235,7 +299,7 @@ const OrderDetails: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => handlePayment('mpesa')}
+                    onClick={handleMpesaPayment}
                     disabled={processing}
                     className="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold rounded-xl hover:from-green-700 hover:to-green-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -243,7 +307,7 @@ const OrderDetails: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => handlePayment('card')}
+                    onClick={handleCardPayment}
                     disabled={processing}
                     className="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -269,6 +333,56 @@ const OrderDetails: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* M-Pesa Modal */}
+      {showMpesaModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
+            <h2 className="text-2xl font-black text-gray-900 mb-6">M-Pesa Payment</h2>
+            
+            <div className="mb-6">
+              <p className="text-gray-600 mb-2">Amount to pay:</p>
+              <p className="text-4xl font-black text-green-600">KES {order?.total.toLocaleString()}</p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Customer Phone Number
+              </label>
+              <input
+                type="tel"
+                placeholder="0712345678 or 254712345678"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Customer will receive a payment prompt on their phone
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowMpesaModal(false);
+                  setPhoneNumber('');
+                }}
+                disabled={mpesaLoading}
+                className="flex-1 px-6 py-3 bg-gray-500 text-white font-bold rounded-xl hover:bg-gray-600 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={processMpesaPayment}
+                disabled={mpesaLoading}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg disabled:opacity-50"
+              >
+                {mpesaLoading ? 'Sending...' : 'Send STK Push'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

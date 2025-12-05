@@ -51,19 +51,16 @@ const Dashboard: React.FC = () => {
     <div className="space-y-8">
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-purple-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-purple-500 to-purple-700 rounded-full mb-4"></div>
           <p className="text-purple-700 text-sm font-semibold mb-2">Available Tables</p>
           <p className="text-5xl font-black text-gray-900">{stats.tables}</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-orange-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-4"></div>
           <p className="text-orange-700 text-sm font-semibold mb-2">Active Orders</p>
           <p className="text-5xl font-black text-gray-900">{stats.activeOrders}</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-green-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
           <p className="text-green-700 text-sm font-semibold mb-2">Completed Orders</p>
           <p className="text-5xl font-black text-gray-900">{stats.completedOrders}</p>
         </div>
@@ -74,7 +71,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/admin-panel')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-purple-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-purple-500 to-purple-700 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Admin Panel</h3>
           <p className="text-gray-600">Full CRUD operations for users, menu, tables</p>
         </button>
@@ -83,7 +79,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/register')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-blue-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Register Staff</h3>
           <p className="text-gray-600">Add new users to the system</p>
         </button>
@@ -92,7 +87,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/orders')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-green-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">All Orders</h3>
           <p className="text-gray-600">View all restaurant orders</p>
         </button>
@@ -104,19 +98,16 @@ const Dashboard: React.FC = () => {
     <div className="space-y-8">
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-blue-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-blue-700 rounded-full mb-4"></div>
           <p className="text-blue-700 text-sm font-semibold mb-2">Available Tables</p>
           <p className="text-5xl font-black text-gray-900">{stats.tables}</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-orange-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-4"></div>
           <p className="text-orange-700 text-sm font-semibold mb-2">Active Orders</p>
           <p className="text-5xl font-black text-gray-900">{stats.activeOrders}</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-green-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
           <p className="text-green-700 text-sm font-semibold mb-2">Completed Orders</p>
           <p className="text-5xl font-black text-gray-900">{stats.completedOrders}</p>
         </div>
@@ -127,7 +118,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/tables')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-blue-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">View Tables</h3>
           <p className="text-gray-600">Manage restaurant tables</p>
         </button>
@@ -136,7 +126,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/orders')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-green-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">All Orders</h3>
           <p className="text-gray-600">View all restaurant orders</p>
         </button>
@@ -148,19 +137,16 @@ const Dashboard: React.FC = () => {
     <div className="space-y-8">
       <div className="grid md:grid-cols-3 gap-6">
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-green-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-green-700 rounded-full mb-4"></div>
           <p className="text-green-700 text-sm font-semibold mb-2">Available Tables</p>
           <p className="text-5xl font-black text-gray-900">{stats.tables}</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-orange-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-4"></div>
           <p className="text-orange-700 text-sm font-semibold mb-2">Active Orders</p>
           <p className="text-5xl font-black text-gray-900">{stats.activeOrders}</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-blue-200">
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
           <p className="text-blue-700 text-sm font-semibold mb-2">Completed Orders</p>
           <p className="text-5xl font-black text-gray-900">{stats.completedOrders}</p>
         </div>
@@ -171,7 +157,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/tables')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-green-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">View Tables</h3>
           <p className="text-gray-600">See available tables</p>
         </button>
@@ -180,7 +165,6 @@ const Dashboard: React.FC = () => {
           onClick={() => navigate('/orders')}
           className="bg-white/95 backdrop-blur rounded-2xl p-8 shadow-xl border-2 border-blue-200 hover:shadow-2xl transition transform hover:-translate-y-2 text-left"
         >
-          <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
           <h3 className="text-2xl font-bold text-gray-900 mb-2">My Orders</h3>
           <p className="text-gray-600">View your orders</p>
         </button>
@@ -190,7 +174,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background Image with Overlay */}
       <div className="fixed inset-0 z-0">
         <img
           src={heroRestaurant}
@@ -200,9 +183,7 @@ const Dashboard: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-orange-900/70 via-amber-900/60 to-red-900/70 backdrop-blur-sm"></div>
       </div>
 
-      {/* Content */}
       <div className="relative z-10">
-        {/* Navigation */}
         <nav className="bg-white/95 backdrop-blur shadow-lg border-b-4 border-orange-500 sticky top-0 z-50">
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
@@ -237,7 +218,6 @@ const Dashboard: React.FC = () => {
           </div>
         </nav>
 
-        {/* Dashboard Content */}
         <div className="container mx-auto px-6 py-12">
           <div className="mb-8 bg-white/95 backdrop-blur rounded-2xl p-6 shadow-xl border-2 border-orange-200">
             <h2 className="text-4xl font-black text-gray-900 mb-2">

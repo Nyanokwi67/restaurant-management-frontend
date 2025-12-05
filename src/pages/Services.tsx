@@ -1,20 +1,100 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import foodPasta from '../assets/images/food-pasta.jpg';
-import foodDessert from '../assets/images/food-dessert.jpg';
-import foodBurger from '../assets/images/food-burger.jpg';
+import burgerImage from '../assets/images/meal-burger.jpg';
+import pastaImage from '../assets/images/meal-pasta.jpg';
+import dessertImage from '../assets/images/dessert-cake.jpg';
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'features' | 'benefits' | 'tech'>('all');
+
+  const features = [
+    {
+      title: 'Order Management',
+      description: 'Complete order tracking from creation to payment with real-time status updates.',
+      category: 'features',
+      image: burgerImage,
+    },
+    {
+      title: 'Table Management',
+      description: 'Monitor table availability, assign waiters, and manage seating efficiently.',
+      category: 'features',
+      image: pastaImage,
+    },
+    {
+      title: 'Menu Control',
+      description: 'Update menu items, pricing, and availability in real-time across the system.',
+      category: 'features',
+      image: dessertImage,
+    },
+    {
+      title: 'Role-Based Access',
+      description: 'Secure authentication with different permissions for admin, manager, and waiter roles.',
+      category: 'features',
+    },
+    {
+      title: 'Payment Processing',
+      description: 'Accept multiple payment methods including cash, M-Pesa, and card payments.',
+      category: 'features',
+    },
+    {
+      title: 'Real-Time Updates',
+      description: 'Instant synchronization across all devices for up-to-date information.',
+      category: 'features',
+    },
+    {
+      title: 'Increased Efficiency',
+      description: 'Reduce order processing time by 50% with streamlined workflows.',
+      category: 'benefits',
+    },
+    {
+      title: 'Better Customer Service',
+      description: 'Faster service and accurate orders lead to happier customers.',
+      category: 'benefits',
+    },
+    {
+      title: 'Reduced Errors',
+      description: 'Digital orders eliminate handwriting mistakes and miscommunication.',
+      category: 'benefits',
+    },
+    {
+      title: 'Data Insights',
+      description: 'Track sales trends, popular items, and staff performance.',
+      category: 'benefits',
+    },
+    {
+      title: 'React & TypeScript',
+      description: 'Modern frontend built with React 18 and TypeScript for type safety.',
+      category: 'tech',
+    },
+    {
+      title: 'NestJS Backend',
+      description: 'Scalable backend architecture with NestJS framework and TypeORM.',
+      category: 'tech',
+    },
+    {
+      title: 'SQL Server Database',
+      description: 'Reliable data storage with Microsoft SQL Server.',
+      category: 'tech',
+    },
+    {
+      title: 'M-Pesa Integration',
+      description: 'Direct integration with Safaricom M-Pesa for mobile payments.',
+      category: 'tech',
+    },
+  ];
+
+  const filteredFeatures = selectedCategory === 'all'
+    ? features
+    : features.filter(f => f.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Navigation Bar */}
       <nav className="bg-white shadow-lg border-b-4 border-orange-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
                 <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
@@ -58,158 +138,183 @@ const Services: React.FC = () => {
         </div>
       </nav>
 
-      {/* Services Content */}
       <div className="container mx-auto px-6 py-16">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">Services</span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Complete point-of-sale system for managing orders, tables, inventory, and staff. Built for efficiency and ease of use.
-          </p>
-        </div>
-
-        {/* Features Grid with Food Images */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {/* Feature 1 - With Burger Image */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-48 overflow-hidden">
-              <img 
-                src={foodBurger} 
-                alt="Menu Management" 
-                className="w-full h-full object-cover hover:scale-110 transition duration-300"
-              />
+        <div className="grid grid-cols-12 gap-8">
+          <div className="col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-orange-200 sticky top-6">
+              <h3 className="text-lg font-black text-gray-900 mb-4">Categories</h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    selectedCategory === 'all'
+                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  All Services
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('features')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    selectedCategory === 'features'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('benefits')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    selectedCategory === 'benefits'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Benefits
+                </button>
+                <button
+                  onClick={() => setSelectedCategory('tech')}
+                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                    selectedCategory === 'tech'
+                      ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Technology
+                </button>
+              </div>
             </div>
-            <div className="p-6">
-              <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-4"></div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Role Management</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Separate access levels for Admins, Managers, and Waiters. Secure authentication with role-based permissions.
+          </div>
+
+          <div className="col-span-10">
+            <div className="mb-12 text-center">
+              <h2 className="text-5xl font-black text-gray-900 mb-4">
+                {selectedCategory === 'all' && 'All Services'}
+                {selectedCategory === 'features' && 'System Features'}
+                {selectedCategory === 'benefits' && 'Business Benefits'}
+                {selectedCategory === 'tech' && 'Technology Stack'}
+              </h2>
+              <p className="text-xl text-gray-600">
+                {selectedCategory === 'all' && 'Everything you need to run your restaurant efficiently'}
+                {selectedCategory === 'features' && 'Powerful features to streamline your operations'}
+                {selectedCategory === 'benefits' && 'How our system improves your business'}
+                {selectedCategory === 'tech' && 'Built with modern, reliable technology'}
+              </p>
+              <p className="text-lg text-orange-600 font-semibold mt-2">
+                Showing {filteredFeatures.length} {selectedCategory === 'all' ? 'services' : selectedCategory}
               </p>
             </div>
-          </div>
 
-          {/* Feature 2 - With Pasta Image */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-48 overflow-hidden">
-              <img 
-                src={foodPasta} 
-                alt="Real-Time Tracking" 
-                className="w-full h-full object-cover hover:scale-110 transition duration-300"
-              />
+            <div className="grid md:grid-cols-3 gap-6">
+              {filteredFeatures.map((feature, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2"
+                >
+                  {feature.image && (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={feature.image}
+                        alt={feature.title}
+                        className="w-full h-full object-cover hover:scale-110 transition duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="p-6">
-              <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Real-Time Tracking</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Monitor orders, track expenses, manage inventory, and view sales reports in real-time.
+
+            <div className="mt-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl shadow-2xl p-12 text-white text-center">
+              <h2 className="text-4xl font-black mb-4">Ready to Get Started?</h2>
+              <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+                Transform your restaurant operations today with our comprehensive management system
               </p>
-            </div>
-          </div>
-
-          {/* Feature 3 - With Dessert Image */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-48 overflow-hidden">
-              <img 
-                src={foodDessert} 
-                alt="Payment Processing" 
-                className="w-full h-full object-cover hover:scale-110 transition duration-300"
-              />
-            </div>
-            <div className="p-6">
-              <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4"></div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Payment Processing</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Accept multiple payment methods: Cash, M-Pesa, and Card. Track all transactions securely.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 4 - No Image */}
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Menu Management</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Easy menu updates, pricing changes, and availability tracking. Organize by categories.
-            </p>
-          </div>
-
-          {/* Feature 5 - No Image */}
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Table Management</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Track table occupancy, assign waiters, and manage seating efficiently.
-            </p>
-          </div>
-
-          {/* Feature 6 - No Image */}
-          <div className="bg-white rounded-2xl p-8 shadow-xl border-2 border-orange-200 hover:shadow-2xl transition transform hover:-translate-y-2">
-            <div className="h-1 w-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6"></div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Financial Reports</h3>
-            <p className="text-gray-600 leading-relaxed">
-              Generate daily, weekly, and monthly reports. Track profit margins and expense approvals.
-            </p>
-          </div>
-        </div>
-
-        {/* User Roles Section */}
-        <div className="mt-24 text-center">
-          <h2 className="text-4xl font-black text-gray-900 mb-4">Three User Roles</h2>
-          <p className="text-gray-600 text-lg mb-12">Designed for different levels of access and responsibility</p>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Admin */}
-            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-105 transition">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-black text-purple-600">A</span>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => navigate('/contact')}
+                  className="px-8 py-3 bg-white text-orange-600 font-bold rounded-xl hover:bg-gray-100 transition shadow-lg"
+                >
+                  Contact Us
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-8 py-3 bg-orange-700 text-white font-bold rounded-xl hover:bg-orange-800 transition shadow-lg"
+                >
+                  Staff Login
+                </button>
               </div>
-              <h3 className="text-2xl font-bold mb-3">Admin</h3>
-              <ul className="text-left space-y-2 text-purple-100">
-                <li>• Manage all users</li>
-                <li>• Approve expenses</li>
-                <li>• View all reports</li>
-                <li>• Full system access</li>
-              </ul>
-            </div>
-
-            {/* Manager */}
-            <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-105 transition">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-black text-blue-600">M</span>
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Manager</h3>
-              <ul className="text-left space-y-2 text-blue-100">
-                <li>• Manage menu & tables</li>
-                <li>• Submit expenses</li>
-                <li>• Monitor orders</li>
-                <li>• View sales data</li>
-              </ul>
-            </div>
-
-            {/* Waiter */}
-            <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-8 text-white shadow-2xl transform hover:scale-105 transition">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-black text-green-600">W</span>
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Waiter</h3>
-              <ul className="text-left space-y-2 text-green-100">
-                <li>• Take customer orders</li>
-                <li>• Manage tables</li>
-                <li>• Process payments</li>
-                <li>• View order history</li>
-              </ul>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-24">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400">© 2025 Miriam's Restaurant. Restaurant Management System.</p>
-          <p className="text-gray-500 text-sm mt-2">Built with NestJS, React, TypeScript & SQL Server</p>
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-8 mb-6">
+            <div>
+              <h3 className="text-xl font-bold mb-4">Miriam's Restaurant</h3>
+              <p className="text-gray-400 text-sm">
+                Modern restaurant management system built for efficiency and ease of use.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/about')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    About Us
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/services')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    Services
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/contact')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    Contact Us
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4">Contact</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>Email: info@miriamsrestaurant.com</li>
+                <li>Phone: +254 700 000 000</li>
+                <li>Location: Nairobi, Kenya</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-6 text-center">
+            <p className="text-gray-400 text-sm">© 2025 Miriam's Restaurant. Restaurant Management System.</p>
+          </div>
         </div>
       </footer>
     </div>

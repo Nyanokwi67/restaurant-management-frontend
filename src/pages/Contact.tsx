@@ -10,32 +10,20 @@ const Contact: React.FC = () => {
     subject: '',
     message: '',
   });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-    
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    }, 3000);
+    alert('Thank you for your message! We will get back to you soon.');
+    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Navigation Bar */}
       <nav className="bg-white shadow-lg border-b-4 border-orange-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center transform rotate-3">
                 <span className="text-2xl font-black text-white">MR</span>
               </div>
               <div>
@@ -79,206 +67,193 @@ const Contact: React.FC = () => {
         </div>
       </nav>
 
-      {/* Contact Content */}
       <div className="container mx-auto px-6 py-16">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Get In <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">Touch</span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Have questions about our restaurant management system? We'd love to hear from you. 
-            Send us a message and we'll respond as soon as possible.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
-          {/* Contact Form */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-            <h3 className="text-3xl font-black text-gray-900 mb-6">Send Us a Message</h3>
-            
-            {submitted ? (
-              <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 text-center">
-                <div className="text-5xl mb-4">✓</div>
-                <h4 className="text-2xl font-bold text-green-700 mb-2">Message Sent!</h4>
-                <p className="text-green-600">Thank you for contacting us. We'll get back to you soon!</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
-                    placeholder="John Doe"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
-                    placeholder="+254 700 000 000"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Subject *</label>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
-                    placeholder="How can we help?"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Message *</label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition resize-none"
-                    placeholder="Tell us more about your inquiry..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition shadow-lg"
-                >
-                  Send Message
-                </button>
-              </form>
-            )}
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black text-gray-900 mb-4">Contact Us</h2>
+            <p className="text-xl text-gray-600">
+              Get in touch with our team for support, inquiries, or demo requests
+            </p>
           </div>
 
-          {/* Contact Information */}
-          <div className="space-y-6">
-            {/* Contact Cards */}
-            <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-              <div className="h-1 w-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-6"></div>
-              <h4 className="text-xl font-bold text-gray-900 mb-2">Email Us</h4>
-              <p className="text-gray-600 mb-2">Send us an email anytime!</p>
-              <a href="mailto:info@miriamsrestaurant.com" className="text-orange-600 font-semibold hover:text-orange-700">
-                info@miriamsrestaurant.com
-              </a>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-              <div className="h-1 w-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-6"></div>
-              <h4 className="text-xl font-bold text-gray-900 mb-2">Call Us</h4>
-              <p className="text-gray-600 mb-2">Mon-Fri from 8am to 6pm</p>
-              <a href="tel:+254700000000" className="text-orange-600 font-semibold hover:text-orange-700">
-                +254 700 000 000
-              </a>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-              <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-6"></div>
-              <h4 className="text-xl font-bold text-gray-900 mb-2">Visit Us</h4>
-              <p className="text-gray-600 mb-2">Come say hello!</p>
-              <p className="text-orange-600 font-semibold">
-                Nairobi, Kenya<br />
-                Westlands, ABC Place
-              </p>
-            </div>
-
-            {/* Business Hours */}
-            <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl shadow-2xl p-8 text-white">
-              <h4 className="text-2xl font-bold mb-4">Business Hours</h4>
-              <div className="space-y-2 text-orange-100">
-                <div className="flex justify-between">
-                  <span>Monday - Friday:</span>
-                  <span className="font-semibold text-white">8:00 AM - 6:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Saturday:</span>
-                  <span className="font-semibold text-white">9:00 AM - 4:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sunday:</span>
-                  <span className="font-semibold text-white">Closed</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="bg-white rounded-3xl shadow-2xl p-12 border-2 border-orange-200">
-          <h3 className="text-4xl font-black text-gray-900 mb-8 text-center">Frequently Asked Questions</h3>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <div className="h-1 w-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-3"></div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">How do I get started?</h4>
-              <p className="text-gray-600">
-                Contact us via email or phone, and our team will guide you through the setup process. 
-                We offer personalized onboarding for all new clients.
-              </p>
+              <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                      placeholder="Your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                      placeholder="+254 700 000 000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                      placeholder="How can we help?"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Message</label>
+                    <textarea
+                      required
+                      rows={5}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none resize-none"
+                      placeholder="Tell us more about your inquiry..."
+                    ></textarea>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition shadow-lg"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </form>
             </div>
 
-            <div>
-              <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-3"></div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">Is training provided?</h4>
-              <p className="text-gray-600">
-                Yes! We provide comprehensive training for all staff members, ensuring everyone 
-                can use the system efficiently from day one.
-              </p>
-            </div>
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-blue-200">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Office Location</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  123 Restaurant Street<br />
+                  Nairobi, Kenya<br />
+                  00100
+                </p>
+              </div>
 
-            <div>
-              <div className="h-1 w-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-3"></div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">What support is available?</h4>
-              <p className="text-gray-600">
-                We offer 24/7 email support and phone support during business hours. 
-                Emergency technical support is available for critical issues.
-              </p>
-            </div>
+              <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-200">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Contact Information</h3>
+                <div className="space-y-3 text-gray-600">
+                  <p>
+                    <span className="font-bold text-gray-900">Email:</span><br />
+                    info@miriamsrestaurant.com
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-900">Phone:</span><br />
+                    +254 700 000 000
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-900">Support:</span><br />
+                    support@miriamsrestaurant.com
+                  </p>
+                </div>
+              </div>
 
-            <div>
-              <div className="h-1 w-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mb-3"></div>
-              <h4 className="text-lg font-bold text-gray-900 mb-2">Can I customize the system?</h4>
-              <p className="text-gray-600">
-                Absolutely! Our system is highly customizable to match your restaurant's specific 
-                needs and workflows.
-              </p>
+              <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Business Hours</h3>
+                <div className="space-y-2 text-gray-600">
+                  <p><span className="font-bold text-gray-900">Monday - Friday:</span> 8:00 AM - 6:00 PM</p>
+                  <p><span className="font-bold text-gray-900">Saturday:</span> 9:00 AM - 4:00 PM</p>
+                  <p><span className="font-bold text-gray-900">Sunday:</span> Closed</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-24">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400">© 2025 Miriam's Restaurant. Restaurant Management System.</p>
-          <p className="text-gray-500 text-sm mt-2">Built with NestJS, React, TypeScript & SQL Server</p>
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-8 mb-6">
+            <div>
+              <h3 className="text-xl font-bold mb-4">Miriam's Restaurant</h3>
+              <p className="text-gray-400 text-sm">
+                Modern restaurant management system built for efficiency and ease of use.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/about')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    About Us
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/services')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    Services
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/contact')}
+                    className="text-gray-400 hover:text-white transition text-sm"
+                  >
+                    Contact Us
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-bold mb-4">Contact</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>Email: info@miriamsrestaurant.com</li>
+                <li>Phone: +254 700 000 000</li>
+                <li>Location: Nairobi, Kenya</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-6 text-center">
+            <p className="text-gray-400 text-sm">© 2025 Miriam's Restaurant. Restaurant Management System.</p>
+          </div>
         </div>
       </footer>
     </div>

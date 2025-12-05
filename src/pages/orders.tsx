@@ -7,7 +7,6 @@ interface Order {
   id: number;
   tableNumber: number;
   waiterName: string;
-  items: string;
   total: number;
   status: 'open' | 'paid';
   paymentMethod?: string;
@@ -17,9 +16,12 @@ interface Order {
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [filter, setFilter] = useState<'all' | 'open' | 'paid'>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'paid'>('all');
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'cash' | 'mpesa' | 'card'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -29,36 +31,58 @@ const Orders: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    filterOrders();
-  }, [filter, orders]);
+    applyFilters();
+  }, [orders, statusFilter, paymentFilter, searchTerm]);
 
   const fetchOrders = async () => {
     try {
       const data = await ordersAPI.getAll();
+      console.log('Fetched orders:', data);
       setOrders(data);
-      setFilteredOrders(data);
-    } catch (err: any) {
+    } catch (err) {
+      console.error('Error fetching orders:', err);
       setError('Failed to load orders');
     } finally {
       setLoading(false);
     }
   };
 
-  const filterOrders = () => {
-    if (filter === 'all') {
-      setFilteredOrders(orders);
-    } else {
-      setFilteredOrders(orders.filter((order) => order.status === filter));
-    }
-  };
+  const applyFilters = () => {
+    let filtered = [...orders];
 
-  const parseItems = (itemsString: string) => {
-    try {
-      const items = JSON.parse(itemsString);
-      return items.map((item: any) => item.name).join(', ');
-    } catch {
-      return 'No items';
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order => order.status === statusFilter);
     }
+
+    if (paymentFilter !== 'all') {
+      filtered = filtered.filter(order => {
+        const payment = order.paymentMethod?.toLowerCase();
+        return payment === paymentFilter;
+      });
+    }
+
+    if (searchTerm && searchTerm.trim() !== '') {
+      const searchLower = searchTerm.toLowerCase().trim();
+      
+      filtered = filtered.filter(order => {
+        const orderId = String(order.id);
+        const tableNum = String(order.tableNumber);
+        const waiterName = order.waiterName ? order.waiterName.toLowerCase() : '';
+        const totalAmount = String(order.total);
+        const paymentMethod = order.paymentMethod ? order.paymentMethod.toLowerCase() : '';
+        
+        const matchesId = orderId.includes(searchLower);
+        const matchesTable = tableNum.includes(searchLower) || `table ${tableNum}`.includes(searchLower);
+        const matchesWaiter = waiterName.includes(searchLower);
+        const matchesTotal = totalAmount.includes(searchLower);
+        const matchesPayment = paymentMethod.includes(searchLower);
+        
+        return matchesId || matchesTable || matchesWaiter || matchesTotal || matchesPayment;
+      });
+    }
+
+    console.log('Filtered orders:', filtered.length);
+    setFilteredOrders(filtered);
   };
 
   const handleLogout = () => {
@@ -74,9 +98,24 @@ const Orders: React.FC = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-2xl font-bold text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Navigation */}
       <nav className="bg-white shadow-lg border-b-4 border-orange-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -85,14 +124,14 @@ const Orders: React.FC = () => {
                 <span className="text-xl font-black text-white">MR</span>
               </div>
               <div>
-                <h1 className="text-xl font-black text-gray-900">My Orders</h1>
-                <p className="text-xs text-orange-600 font-semibold">Order Management</p>
+                <h1 className="text-xl font-black text-gray-900">Orders</h1>
+                <p className="text-xs text-orange-600 font-semibold">All Orders</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition font-semibold"
               >
                 Dashboard
               </button>
@@ -112,99 +151,221 @@ const Orders: React.FC = () => {
       </nav>
 
       <div className="container mx-auto px-6 py-8">
-        {error && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
-            {error}
-          </div>
-        )}
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-orange-200 sticky top-6">
+              <h3 className="text-lg font-black text-gray-900 mb-4">Filters</h3>
 
-        <div className="mb-8">
-          <h2 className="text-4xl font-black text-gray-900 mb-4">Orders</h2>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                filter === 'all'
-                  ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                  : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-orange-300'
-              }`}
-            >
-              All Orders
-            </button>
-            <button
-              onClick={() => setFilter('open')}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                filter === 'open'
-                  ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white'
-                  : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-orange-300'
-              }`}
-            >
-              Open
-            </button>
-            <button
-              onClick={() => setFilter('paid')}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                filter === 'paid'
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                  : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-orange-300'
-              }`}
-            >
-              Paid
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {filteredOrders.map((order) => (
-            <button
-              key={order.id}
-              onClick={() => navigate(`/order/${order.id}`)}
-              className="w-full bg-white rounded-2xl p-6 shadow-xl border-2 border-gray-200 hover:border-orange-300 hover:shadow-2xl transition text-left"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
-                      <span className="text-white font-black">T{order.tableNumber}</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900">Table {order.tableNumber}</h3>
-                      <p className="text-sm text-gray-500">by {order.waiterName}</p>
-                    </div>
-                  </div>
+              <div className="mb-6">
+                <p className="text-sm font-bold text-gray-700 mb-2">Status</p>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setStatusFilter('all')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      statusFilter === 'all'
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Orders
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('open')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      statusFilter === 'open'
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Open
+                  </button>
+                  <button
+                    onClick={() => setStatusFilter('paid')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      statusFilter === 'paid'
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Paid
+                  </button>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-black text-orange-600">KES {order.total.toLocaleString()}</p>
-                  {order.status === 'open' ? (
-                    <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-bold mt-2">
-                      OPEN
-                    </span>
-                  ) : (
-                    <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold mt-2">
-                      PAID
-                    </span>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-sm font-bold text-gray-700 mb-2">Payment</p>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setPaymentFilter('all')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      paymentFilter === 'all'
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Methods
+                  </button>
+                  <button
+                    onClick={() => setPaymentFilter('cash')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      paymentFilter === 'cash'
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Cash
+                  </button>
+                  <button
+                    onClick={() => setPaymentFilter('mpesa')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      paymentFilter === 'mpesa'
+                        ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    M-Pesa
+                  </button>
+                  <button
+                    onClick={() => setPaymentFilter('card')}
+                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                      paymentFilter === 'card'
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Card
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setStatusFilter('all');
+                  setPaymentFilter('all');
+                  setSearchTerm('');
+                }}
+                className="w-full px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold text-sm"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+
+          <div className="col-span-10">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-orange-200">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-3xl font-black text-gray-900">All Orders</h2>
+                  <p className="text-gray-600">
+                    Showing {filteredOrders.length} of {orders.length} orders
+                  </p>
+                </div>
+                <div className="w-80">
+                  <input
+                    type="text"
+                    placeholder="Search by ID, table, waiter, amount, payment..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none text-sm"
+                  />
+                  {searchTerm && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Searching for: "{searchTerm}"
+                    </p>
                   )}
                 </div>
               </div>
-              <div className="h-px bg-gray-200 my-3"></div>
-              <p className="text-gray-600 mb-2">
-                <span className="font-semibold">Items:</span> {parseItems(order.items)}
-              </p>
-              {order.paymentMethod && (
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Payment:</span> {order.paymentMethod.toUpperCase()}
-                </p>
-              )}
-              <p className="text-gray-500 text-sm">{new Date(order.timestamp).toLocaleString()}</p>
-            </button>
-          ))}
-        </div>
 
-        {filteredOrders.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-2xl shadow-xl">
-            <p className="text-gray-500 text-lg">No orders found</p>
+              {filteredOrders.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg mb-2">No orders found</p>
+                  {searchTerm && (
+                    <div className="text-sm text-gray-400 space-y-1">
+                      <p>Search term: "{searchTerm}"</p>
+                      <p>Try different keywords or clear filters</p>
+                    </div>
+                  )}
+                  {(statusFilter !== 'all' || paymentFilter !== 'all') && (
+                    <button
+                      onClick={() => {
+                        setStatusFilter('all');
+                        setPaymentFilter('all');
+                        setSearchTerm('');
+                      }}
+                      className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold text-sm"
+                    >
+                      Clear All Filters
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredOrders.map((order) => (
+                    <div
+                      key={order.id}
+                      onClick={() => navigate(`/order/${order.id}`)}
+                      className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border-2 border-orange-200 hover:shadow-lg transition cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-6">
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Order ID</p>
+                            <p className="text-2xl font-black text-gray-900">#{order.id}</p>
+                          </div>
+                          <div className="h-12 w-px bg-gray-300"></div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Table</p>
+                            <p className="text-lg font-bold text-gray-900">Table {order.tableNumber}</p>
+                          </div>
+                          <div className="h-12 w-px bg-gray-300"></div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Waiter</p>
+                            <p className="text-lg font-bold text-gray-900">{order.waiterName}</p>
+                          </div>
+                          <div className="h-12 w-px bg-gray-300"></div>
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Total</p>
+                            <p className="text-lg font-bold text-orange-600">
+                              KES {order.total.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <span
+                              className={`px-4 py-2 rounded-full text-sm font-bold ${
+                                order.status === 'paid'
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-yellow-100 text-yellow-700'
+                              }`}
+                            >
+                              {order.status.toUpperCase()}
+                            </span>
+                          </div>
+                          {order.paymentMethod && (
+                            <div>
+                              <p className="text-xs text-gray-500">Payment</p>
+                              <p className="text-sm font-bold text-gray-900">
+                                {order.paymentMethod.toUpperCase()}
+                              </p>
+                            </div>
+                          )}
+                          <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold">
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-gray-500">
+                        {new Date(order.timestamp).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

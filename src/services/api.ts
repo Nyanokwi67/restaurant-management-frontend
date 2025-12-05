@@ -1,14 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_URL = 'http://localhost:3000/api';
 
-// Create axios instance with default config
-const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+const api = axios.create({
+  baseURL: API_URL,
 });
 
-// Add token to requests automatically
-axiosInstance.interceptors.request.use((config) => {
+// Add token to requests
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -18,130 +17,50 @@ axiosInstance.interceptors.request.use((config) => {
 
 // Auth API
 export const authAPI = {
-  login: async (username: string, password: string) => {
-    const response = await axiosInstance.post('/auth/login', { username, password });
-    return response.data;
-  },
+  login: (username: string, password: string) =>
+    api.post('/auth/login', { username, password }).then((res) => res.data),
 };
 
 // Users API
 export const usersAPI = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/users');
-    return response.data;
-  },
-  getOne: async (id: number) => {
-    const response = await axiosInstance.get(`/users/${id}`);
-    return response.data;
-  },
-  createUser: async (userData: any) => {
-    const response = await axiosInstance.post('/users', userData);
-    return response.data;
-  },
-  updateUser: async (id: number, userData: any) => {
-    const response = await axiosInstance.patch(`/users/${id}`, userData);
-    return response.data;
-  },
-  deleteUser: async (id: number) => {
-    const response = await axiosInstance.delete(`/users/${id}`);
-    return response.data;
-  },
-};
-
-// Menu Items API
-export const menuItemsAPI = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/menu-items');
-    return response.data;
-  },
-  getOne: async (id: number) => {
-    const response = await axiosInstance.get(`/menu-items/${id}`);
-    return response.data;
-  },
-  create: async (data: any) => {
-    const response = await axiosInstance.post('/menu-items', data);
-    return response.data;
-  },
-  update: async (id: number, data: any) => {
-    const response = await axiosInstance.patch(`/menu-items/${id}`, data);
-    return response.data;
-  },
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/menu-items/${id}`);
-    return response.data;
-  },
+  getAll: () => api.get('/users').then((res) => res.data),
+  getOne: (id: number) => api.get(`/users/${id}`).then((res) => res.data),
+  createUser: (data: any) => api.post('/users', data).then((res) => res.data),
+  updateUser: (id: number, data: any) => api.patch(`/users/${id}`, data).then((res) => res.data),
+  deleteUser: (id: number) => api.delete(`/users/${id}`).then((res) => res.data),
 };
 
 // Tables API
 export const tablesAPI = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/tables');
-    return response.data;
-  },
-  getOne: async (id: number) => {
-    const response = await axiosInstance.get(`/tables/${id}`);
-    return response.data;
-  },
-  create: async (data: any) => {
-    const response = await axiosInstance.post('/tables', data);
-    return response.data;
-  },
-  update: async (id: number, data: any) => {
-    const response = await axiosInstance.patch(`/tables/${id}`, data);
-    return response.data;
-  },
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/tables/${id}`);
-    return response.data;
-  },
+  getAll: () => api.get('/tables').then((res) => res.data),
+  getOne: (id: number) => api.get(`/tables/${id}`).then((res) => res.data),
+  create: (data: any) => api.post('/tables', data).then((res) => res.data),
+  update: (id: number, data: any) => api.patch(`/tables/${id}`, data).then((res) => res.data),
+  delete: (id: number) => api.delete(`/tables/${id}`).then((res) => res.data),
+};
+
+// Menu Items API
+export const menuItemsAPI = {
+  getAll: () => api.get('/menu-items').then((res) => res.data),
+  getOne: (id: number) => api.get(`/menu-items/${id}`).then((res) => res.data),
+  create: (data: any) => api.post('/menu-items', data).then((res) => res.data),
+  update: (id: number, data: any) => api.patch(`/menu-items/${id}`, data).then((res) => res.data),
+  delete: (id: number) => api.delete(`/menu-items/${id}`).then((res) => res.data),
 };
 
 // Orders API
 export const ordersAPI = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/orders');
-    return response.data;
-  },
-  getOne: async (id: number) => {
-    const response = await axiosInstance.get(`/orders/${id}`);
-    return response.data;
-  },
-  create: async (data: any) => {
-    const response = await axiosInstance.post('/orders', data);
-    return response.data;
-  },
-  update: async (id: number, data: any) => {
-    const response = await axiosInstance.patch(`/orders/${id}`, data);
-    return response.data;
-  },
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/orders/${id}`);
-    return response.data;
-  },
+  getAll: () => api.get('/orders').then((res) => res.data),
+  getOne: (id: number) => api.get(`/orders/${id}`).then((res) => res.data),
+  create: (data: any) => api.post('/orders', data).then((res) => res.data),
+  update: (id: number, data: any) => api.patch(`/orders/${id}`, data).then((res) => res.data),
+  delete: (id: number) => api.delete(`/orders/${id}`).then((res) => res.data),
 };
 
-// Expenses API
-export const expensesAPI = {
-  getAll: async () => {
-    const response = await axiosInstance.get('/expenses');
-    return response.data;
-  },
-  getOne: async (id: number) => {
-    const response = await axiosInstance.get(`/expenses/${id}`);
-    return response.data;
-  },
-  create: async (data: any) => {
-    const response = await axiosInstance.post('/expenses', data);
-    return response.data;
-  },
-  update: async (id: number, data: any) => {
-    const response = await axiosInstance.patch(`/expenses/${id}`, data);
-    return response.data;
-  },
-  delete: async (id: number) => {
-    const response = await axiosInstance.delete(`/expenses/${id}`);
-    return response.data;
-  },
+// M-Pesa API
+export const mpesaAPI = {
+  initiateSTKPush: (phoneNumber: string, amount: number, orderId: number) =>
+    api.post('/mpesa/stk-push', { phoneNumber, amount, orderId }).then((res) => res.data),
 };
 
-export default axiosInstance;
+export default api;
