@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { usersAPI } from '../services/api';
+import { useCreateUserMutation } from '../app/services/api';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,40 +9,27 @@ const Register: React.FC = () => {
     username: '',
     password: '',
     role: 'waiter',
-    active: true,
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [createUser, { isLoading }] = useCreateUserMutation();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  React.useEffect(() => {
+    if (user?.role !== 'admin') {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    setLoading(true);
 
     try {
-      await usersAPI.createUser(formData);
-      setSuccess('User created successfully!');
-      setFormData({
-        name: '',
-        username: '',
-        password: '',
-        role: 'waiter',
-        active: true,
-      });
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create user');
-    } finally {
-      setLoading(false);
+      await createUser({ ...formData, active: true }).unwrap();
+      alert('User registered successfully!');
+      setFormData({ name: '', username: '', password: '', role: 'waiter' });
+    } catch (err) {
+      alert('Failed to register user');
     }
   };
 
@@ -52,24 +39,23 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-lg border-b-4 border-orange-500">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-lg border-b-2 border-gray-100">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
                 <span className="text-xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Register Staff</h1>
-                <p className="text-xs text-orange-600 font-semibold">Admin Panel</p>
+                <p className="text-xs text-gray-600 font-semibold">Add New User</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-semibold"
               >
                 Dashboard
               </button>
@@ -79,7 +65,7 @@ const Register: React.FC = () => {
               </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-semibold"
               >
                 Logout
               </button>
@@ -88,72 +74,56 @@ const Register: React.FC = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-orange-200">
-            <h2 className="text-3xl font-black text-gray-900 mb-2">Create New User</h2>
-            <p className="text-gray-600 mb-6">Add a new staff member to the system</p>
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-gray-100">
+            <h2 className="text-3xl font-black text-gray-900 mb-8 text-center">
+              Register New Staff Member
+            </h2>
 
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6 text-green-700">
-                {success}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Full Name *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Username *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
                 <input
                   type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
+                  value={formData.username}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   placeholder="johndoe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Password *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
                 <input
                   type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
-                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                  placeholder="••••••••"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Role *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Role</label>
                 <select
-                  name="role"
                   value={formData.role}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                 >
                   <option value="waiter">Waiter</option>
                   <option value="manager">Manager</option>
@@ -163,10 +133,10 @@ const Register: React.FC = () => {
 
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
+                className="w-full px-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Creating User...' : 'Create User'}
+                {isLoading ? 'Registering...' : 'Register Staff Member'}
               </button>
             </form>
           </div>

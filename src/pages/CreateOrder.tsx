@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { menuItemsAPI, ordersAPI, tablesAPI } from '../services/api';
+import { useGetMenuItemsQuery, useGetTableQuery, useCreateOrderMutation } from '../app/services/api';
 
 // Import all menu images
 import drinkSoda from '../assets/images/drink-soda.jpg';
@@ -39,38 +39,26 @@ interface OrderItem {
   quantity: number;
 }
 
-interface Table {
-  id: number;
-  number: number;
-  seats: number;
-  status: string;
-}
-
 const CreateOrder: React.FC = () => {
   const { tableId } = useParams<{ tableId: string }>();
-  const [table, setTable] = useState<Table | null>(null);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('Drinks');
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const { data: table, isLoading: tableLoading, error: tableError } = useGetTableQuery(parseInt(tableId || '0'));
+  const { data: menuItems = [], isLoading: menuLoading } = useGetMenuItemsQuery();
+  const [createOrder, { isLoading: submitting }] = useCreateOrderMutation();
+
   const categories = ['Drinks', 'Meals', 'Desserts'];
 
-  // Map menu item names to images
   const menuImages: { [key: string]: string } = {
-    // Drinks
     'Soda': drinkSoda,
     'Water': drinkWater,
     'Juice': drinkJuice,
     'Coffee': drinkCoffee,
     'Tea': drinkTea,
-    
-    // Meals
     'Burger': mealBurger,
     'Pizza': mealPizza,
     'Pasta': mealPasta,
@@ -78,33 +66,11 @@ const CreateOrder: React.FC = () => {
     'Steak': mealSteak,
     'Chicken': mealChicken,
     'Fish': mealFish,
-    
-    // Desserts
     'Ice Cream': dessertIcecream,
     'Cake': dessertCake,
     'Cookies': dessertCookies,
     'Cheesecake': dessertCheesecake,
     'Brownies': dessertBrownies,
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [tableId]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [tableData, menuData] = await Promise.all([
-        tablesAPI.getOne(parseInt(tableId || '0')),
-        menuItemsAPI.getAll(),
-      ]);
-      setTable(tableData);
-      setMenuItems(menuData.filter((item: MenuItem) => item.available));
-    } catch (err) {
-      setError('Failed to load data');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const addItem = (item: MenuItem) => {
@@ -152,22 +118,19 @@ const CreateOrder: React.FC = () => {
 
     if (!user || !table) return;
 
-    setSubmitting(true);
     try {
-      await ordersAPI.create({
+      await createOrder({
         tableId: table.id,
         waiterId: user.id,
         items: JSON.stringify(orderItems),
         total: calculateTotal(),
         status: 'open',
-      });
+      }).unwrap();
 
       alert('Order created successfully!');
       navigate('/orders');
     } catch (err) {
       alert('Failed to create order');
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -176,22 +139,22 @@ const CreateOrder: React.FC = () => {
     navigate('/login');
   };
 
-  if (loading) {
+  if (tableLoading || menuLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-2xl font-bold text-gray-700">Loading...</div>
       </div>
     );
   }
 
-  if (error || !table) {
+  if (tableError || !table) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-2xl font-bold text-red-600 mb-4">{error || 'Table not found'}</p>
+          <p className="text-2xl font-bold text-gray-900 mb-4">Table not found</p>
           <button
             onClick={() => navigate('/tables')}
-            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold"
+            className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-semibold"
           >
             Back to Tables
           </button>
@@ -200,26 +163,26 @@ const CreateOrder: React.FC = () => {
     );
   }
 
-  const filteredItems = menuItems.filter((item) => item.category === selectedCategory);
+  const filteredItems = menuItems.filter((item) => item.category === selectedCategory && item.available);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      <nav className="bg-white shadow-lg border-b-4 border-orange-500">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-lg border-b-2 border-gray-100">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
                 <span className="text-xl font-black text-white">MR</span>
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Create Order</h1>
-                <p className="text-xs text-orange-600 font-semibold">Table {table.number}</p>
+                <p className="text-xs text-gray-600 font-semibold">Table {table.number}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/tables')}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-semibold"
               >
                 Back
               </button>
@@ -229,7 +192,7 @@ const CreateOrder: React.FC = () => {
               </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-semibold"
               >
                 Logout
               </button>
@@ -241,7 +204,7 @@ const CreateOrder: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-orange-200 sticky top-6">
+            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-gray-100 sticky top-6">
               <h3 className="text-lg font-black text-gray-900 mb-4">Categories</h3>
               <div className="space-y-2">
                 {categories.map((category) => (
@@ -250,8 +213,8 @@ const CreateOrder: React.FC = () => {
                     onClick={() => setSelectedCategory(category)}
                     className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
                       selectedCategory === category
-                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-gray-900 text-white shadow-lg'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     {category}
@@ -262,7 +225,7 @@ const CreateOrder: React.FC = () => {
           </div>
 
           <div className="col-span-7">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-orange-200">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-3xl font-black text-gray-900">{selectedCategory}</h2>
@@ -279,7 +242,7 @@ const CreateOrder: React.FC = () => {
                   {filteredItems.map((item) => (
                     <div
                       key={item.id}
-                      className="bg-white rounded-xl overflow-hidden border-2 border-orange-200 hover:shadow-lg transition"
+                      className="bg-white rounded-xl overflow-hidden border-2 border-gray-100 hover:shadow-lg transition"
                     >
                       {menuImages[item.name] && (
                         <div className="h-40 overflow-hidden">
@@ -292,12 +255,12 @@ const CreateOrder: React.FC = () => {
                       )}
                       <div className="p-4">
                         <h3 className="text-lg font-bold text-gray-900 mb-2">{item.name}</h3>
-                        <p className="text-2xl font-black text-orange-600 mb-3">
+                        <p className="text-2xl font-black text-gray-900 mb-3">
                           KES {item.price.toLocaleString()}
                         </p>
                         <button
                           onClick={() => addItem(item)}
-                          className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 transition shadow-lg"
+                          className="w-full px-4 py-2 bg-gray-900 text-white font-bold rounded-lg hover:bg-gray-800 transition shadow-lg"
                         >
                           Add to Order
                         </button>
@@ -310,7 +273,7 @@ const CreateOrder: React.FC = () => {
           </div>
 
           <div className="col-span-3">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-orange-200 sticky top-6">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100 sticky top-6">
               <h3 className="text-2xl font-black text-gray-900 mb-4">Order Summary</h3>
 
               {orderItems.length === 0 ? (
@@ -321,12 +284,12 @@ const CreateOrder: React.FC = () => {
                 <>
                   <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
                     {orderItems.map((item) => (
-                      <div key={item.id} className="bg-gray-50 rounded-lg p-3">
+                      <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                         <div className="flex justify-between items-start mb-2">
                           <p className="font-bold text-gray-900">{item.name}</p>
                           <button
                             onClick={() => deleteItem(item.id)}
-                            className="text-red-600 hover:text-red-700 font-bold text-sm"
+                            className="text-gray-900 hover:text-gray-700 font-bold text-sm"
                           >
                             Remove
                           </button>
@@ -335,7 +298,7 @@ const CreateOrder: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => removeItem(item.id)}
-                              className="w-8 h-8 bg-red-500 text-white rounded-lg hover:bg-red-600 font-bold"
+                              className="w-8 h-8 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-bold"
                             >
                               -
                             </button>
@@ -343,13 +306,16 @@ const CreateOrder: React.FC = () => {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => addItem(menuItems.find((mi) => mi.id === item.id)!)}
-                              className="w-8 h-8 bg-green-500 text-white rounded-lg hover:bg-green-600 font-bold"
+                              onClick={() => {
+                                const menuItem = menuItems.find((mi) => mi.id === item.id);
+                                if (menuItem) addItem(menuItem);
+                              }}
+                              className="w-8 h-8 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-bold"
                             >
                               +
                             </button>
                           </div>
-                          <p className="font-bold text-orange-600">
+                          <p className="font-bold text-gray-900">
                             KES {(item.price * item.quantity).toLocaleString()}
                           </p>
                         </div>
@@ -357,10 +323,10 @@ const CreateOrder: React.FC = () => {
                     ))}
                   </div>
 
-                  <div className="border-t-2 border-gray-200 pt-4 mb-4">
+                  <div className="border-t-2 border-gray-100 pt-4 mb-4">
                     <div className="flex justify-between items-center">
                       <p className="text-xl font-bold text-gray-700">Total</p>
-                      <p className="text-3xl font-black text-orange-600">
+                      <p className="text-3xl font-black text-gray-900">
                         KES {calculateTotal().toLocaleString()}
                       </p>
                     </div>
@@ -369,7 +335,7 @@ const CreateOrder: React.FC = () => {
                   <button
                     onClick={handleSubmit}
                     disabled={submitting}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? 'Creating Order...' : 'Create Order'}
                   </button>

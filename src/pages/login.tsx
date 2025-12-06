@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authAPI } from '../services/api';
-import loginBg from '../assets/images/login-bg.jpg';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -13,64 +11,48 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const response = await authAPI.login(username, password);
-      login(response.user, response.access_token);
+      await login(username, password);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid credentials');
+    } catch (err) {
+      setError('Invalid username or password');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-6">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={loginBg}
-          alt="Restaurant Background"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40"></div>
-      </div>
-
-      {/* Login Card */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 p-8 text-white text-center">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="text-4xl font-black text-orange-600">MR</span>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-full max-w-md px-6">
+        <div className="bg-gray-50 rounded-3xl shadow-2xl p-8 border-2 border-gray-100">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl font-black text-white">MR</span>
+            </div>
+            <h1 className="text-3xl font-black text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600">Sign in to access the restaurant system</p>
           </div>
-          <h1 className="text-3xl font-black mb-2">Miriam's Restaurant</h1>
-          <p className="text-orange-100 font-semibold">Staff Login Portal</p>
-        </div>
-
-        {/* Login Form */}
-        <div className="p-8">
-          <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">Welcome Back!</h2>
 
           {error && (
-            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 text-red-700 text-center">
-              {error}
+            <div className="mb-6 p-4 bg-white border-2 border-gray-200 rounded-xl">
+              <p className="text-gray-900 text-sm font-semibold text-center">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
               <input
                 type="text"
+                required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
+                className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none transition bg-white"
                 placeholder="Enter your username"
               />
             </div>
@@ -79,10 +61,10 @@ const Login: React.FC = () => {
               <label className="block text-sm font-bold text-gray-700 mb-2">Password</label>
               <input
                 type="password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition"
+                className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none transition bg-white"
                 placeholder="Enter your password"
               />
             </div>
@@ -90,21 +72,26 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-xl hover:from-orange-600 hover:to-red-700 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
-          {/* Back to Home Link */}
           <div className="mt-6 text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-orange-600 hover:text-orange-700 font-semibold text-sm"
+              className="text-gray-900 hover:text-gray-700 font-semibold text-sm"
             >
               ← Back to Home
             </button>
           </div>
+        </div>
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-600 text-sm">
+            Demo Accounts: admin/admin123 • manager/manager123 • waiter/waiter123
+          </p>
         </div>
       </div>
     </div>

@@ -1,7 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { usersAPI, menuItemsAPI, tablesAPI, ordersAPI } from '../services/api';
+import {
+  useGetUsersQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+  useGetMenuItemsQuery,
+  useCreateMenuItemMutation,
+  useUpdateMenuItemMutation,
+  useDeleteMenuItemMutation,
+  useGetTablesQuery,
+  useCreateTableMutation,
+  useUpdateTableMutation,
+  useDeleteTableMutation,
+  useGetOrdersQuery,
+} from '../app/services/api';
 
 // Import all menu images
 import drinkSoda from '../assets/images/drink-soda.jpg';
@@ -24,47 +38,8 @@ import dessertCookies from '../assets/images/dessert-cookies.jpg';
 import dessertCheesecake from '../assets/images/dessert-cheesecake.jpg';
 import dessertBrownies from '../assets/images/dessert-brownies.jpg';
 
-interface User {
-  id: number;
-  name: string;
-  username: string;
-  role: string;
-  active: boolean;
-}
-
-interface MenuItem {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  available: boolean;
-}
-
-interface Table {
-  id: number;
-  number: number;
-  seats: number;
-  status: string;
-}
-
-interface Order {
-  id: number;
-  tableNumber: number;
-  waiterName: string;
-  total: number;
-  status: string;
-  paymentMethod?: string;
-  timestamp: string;
-}
-
 const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'users' | 'menu' | 'tables' | 'orders'>('users');
-  const [users, setUsers] = useState<User[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [tables, setTables] = useState<Table[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -75,6 +50,24 @@ const AdminPanel: React.FC = () => {
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // RTK Query hooks
+  const { data: users = [], isLoading: usersLoading } = useGetUsersQuery(undefined, { skip: activeTab !== 'users' });
+  const { data: menuItems = [], isLoading: menuLoading } = useGetMenuItemsQuery(undefined, { skip: activeTab !== 'menu' });
+  const { data: tables = [], isLoading: tablesLoading } = useGetTablesQuery(undefined, { skip: activeTab !== 'tables' });
+  const { data: orders = [], isLoading: ordersLoading } = useGetOrdersQuery(undefined, { skip: activeTab !== 'orders' });
+
+  const [createUser] = useCreateUserMutation();
+  const [updateUser] = useUpdateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
+
+  const [createMenuItem] = useCreateMenuItemMutation();
+  const [updateMenuItem] = useUpdateMenuItemMutation();
+  const [deleteMenuItem] = useDeleteMenuItemMutation();
+
+  const [createTable] = useCreateTableMutation();
+  const [updateTable] = useUpdateTableMutation();
+  const [deleteTable] = useDeleteTableMutation();
 
   // Map menu item names to images
   const menuImages: { [key: string]: string } = {
@@ -97,38 +90,11 @@ const AdminPanel: React.FC = () => {
     'Brownies': dessertBrownies,
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (user?.role !== 'admin') {
       navigate('/dashboard');
     }
   }, [user, navigate]);
-
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      if (activeTab === 'users') {
-        const data = await usersAPI.getAll();
-        setUsers(data);
-      } else if (activeTab === 'menu') {
-        const data = await menuItemsAPI.getAll();
-        setMenuItems(data);
-      } else if (activeTab === 'tables') {
-        const data = await tablesAPI.getAll();
-        setTables(data);
-      } else if (activeTab === 'orders') {
-        const data = await ordersAPI.getAll();
-        setOrders(data);
-      }
-    } catch (err) {
-      console.error('Error fetching data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -160,14 +126,13 @@ const AdminPanel: React.FC = () => {
   const handleCreate = async () => {
     try {
       if (activeTab === 'users') {
-        await usersAPI.createUser(userForm);
+        await createUser(userForm).unwrap();
       } else if (activeTab === 'menu') {
-        await menuItemsAPI.create(menuForm);
+        await createMenuItem(menuForm).unwrap();
       } else if (activeTab === 'tables') {
-        await tablesAPI.create(tableForm);
+        await createTable(tableForm).unwrap();
       }
       setShowModal(false);
-      fetchData();
       alert('Created successfully!');
     } catch (err) {
       alert('Failed to create');
@@ -178,14 +143,13 @@ const AdminPanel: React.FC = () => {
     try {
       if (activeTab === 'users') {
         const updateData = userForm.password ? userForm : { ...userForm, password: undefined };
-        await usersAPI.updateUser(selectedItem.id, updateData);
+        await updateUser({ id: selectedItem.id, data: updateData }).unwrap();
       } else if (activeTab === 'menu') {
-        await menuItemsAPI.update(selectedItem.id, menuForm);
+        await updateMenuItem({ id: selectedItem.id, data: menuForm }).unwrap();
       } else if (activeTab === 'tables') {
-        await tablesAPI.update(selectedItem.id, tableForm);
+        await updateTable({ id: selectedItem.id, data: tableForm }).unwrap();
       }
       setShowModal(false);
-      fetchData();
       alert('Updated successfully!');
     } catch (err) {
       alert('Failed to update');
@@ -197,24 +161,25 @@ const AdminPanel: React.FC = () => {
 
     try {
       if (activeTab === 'users') {
-        await usersAPI.deleteUser(id);
+        await deleteUser(id).unwrap();
       } else if (activeTab === 'menu') {
-        await menuItemsAPI.delete(id);
+        await deleteMenuItem(id).unwrap();
       } else if (activeTab === 'tables') {
-        await tablesAPI.delete(id);
+        await deleteTable(id).unwrap();
       }
-      fetchData();
       alert('Deleted successfully!');
     } catch (err) {
       alert('Failed to delete');
     }
   };
 
+  const loading = usersLoading || menuLoading || tablesLoading || ordersLoading;
+
   const renderUsersTable = () => (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-50">
             <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Name</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Username</th>
@@ -231,16 +196,16 @@ const AdminPanel: React.FC = () => {
               <td className="px-4 py-3">{user.username}</td>
               <td className="px-4 py-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                  user.role === 'manager' ? 'bg-blue-100 text-blue-700' :
-                  'bg-green-100 text-green-700'
+                  user.role === 'admin' ? 'bg-gray-900 text-white' :
+                  user.role === 'manager' ? 'bg-gray-700 text-white' :
+                  'bg-gray-500 text-white'
                 }`}>
                   {user.role.toUpperCase()}
                 </span>
               </td>
               <td className="px-4 py-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  user.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  user.active ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
                 }`}>
                   {user.active ? 'ACTIVE' : 'INACTIVE'}
                 </span>
@@ -248,13 +213,13 @@ const AdminPanel: React.FC = () => {
               <td className="px-4 py-3">
                 <button
                   onClick={() => openEditModal(user)}
-                  className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2 text-sm font-semibold"
+                  className="px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 mr-2 text-sm font-semibold"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+                  className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
                 >
                   Delete
                 </button>
@@ -270,7 +235,7 @@ const AdminPanel: React.FC = () => {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-50">
             <th className="px-4 py-3 text-left font-bold text-gray-700">Image</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Name</th>
@@ -294,11 +259,11 @@ const AdminPanel: React.FC = () => {
               </td>
               <td className="px-4 py-3">{item.id}</td>
               <td className="px-4 py-3 font-semibold">{item.name}</td>
-              <td className="px-4 py-3 text-orange-600 font-bold">KES {item.price}</td>
+              <td className="px-4 py-3 text-gray-900 font-bold">KES {item.price}</td>
               <td className="px-4 py-3">{item.category}</td>
               <td className="px-4 py-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  item.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  item.available ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
                 }`}>
                   {item.available ? 'YES' : 'NO'}
                 </span>
@@ -306,13 +271,13 @@ const AdminPanel: React.FC = () => {
               <td className="px-4 py-3">
                 <button
                   onClick={() => openEditModal(item)}
-                  className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2 text-sm font-semibold"
+                  className="px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 mr-2 text-sm font-semibold"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(item.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+                  className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
                 >
                   Delete
                 </button>
@@ -328,7 +293,7 @@ const AdminPanel: React.FC = () => {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-50">
             <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Table Number</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Seats</th>
@@ -344,7 +309,7 @@ const AdminPanel: React.FC = () => {
               <td className="px-4 py-3">{table.seats}</td>
               <td className="px-4 py-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  table.status === 'free' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                  table.status === 'free' ? 'bg-gray-900 text-white' : 'bg-gray-500 text-white'
                 }`}>
                   {table.status.toUpperCase()}
                 </span>
@@ -352,13 +317,13 @@ const AdminPanel: React.FC = () => {
               <td className="px-4 py-3">
                 <button
                   onClick={() => openEditModal(table)}
-                  className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2 text-sm font-semibold"
+                  className="px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 mr-2 text-sm font-semibold"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(table.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+                  className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
                 >
                   Delete
                 </button>
@@ -374,7 +339,7 @@ const AdminPanel: React.FC = () => {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-50">
             <th className="px-4 py-3 text-left font-bold text-gray-700">ID</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Table</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Waiter</th>
@@ -390,10 +355,10 @@ const AdminPanel: React.FC = () => {
               <td className="px-4 py-3">{order.id}</td>
               <td className="px-4 py-3 font-semibold">Table {order.tableNumber}</td>
               <td className="px-4 py-3">{order.waiterName}</td>
-              <td className="px-4 py-3 text-orange-600 font-bold">KES {order.total.toLocaleString()}</td>
+              <td className="px-4 py-3 text-gray-900 font-bold">KES {order.total.toLocaleString()}</td>
               <td className="px-4 py-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  order.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                  order.status === 'paid' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-700'
                 }`}>
                   {order.status.toUpperCase()}
                 </span>
@@ -408,23 +373,23 @@ const AdminPanel: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      <nav className="bg-white shadow-lg border-b-4 border-purple-500">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-lg border-b-2 border-gray-100">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
                 <span className="text-xl font-black text-white">AP</span>
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Admin Panel</h1>
-                <p className="text-xs text-purple-600 font-semibold">System Management</p>
+                <p className="text-xs text-gray-600 font-semibold">System Management</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-semibold"
               >
                 Dashboard
               </button>
@@ -434,7 +399,7 @@ const AdminPanel: React.FC = () => {
               </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-semibold"
               >
                 Logout
               </button>
@@ -446,15 +411,15 @@ const AdminPanel: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-purple-200 sticky top-6">
+            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-gray-100 sticky top-6">
               <h3 className="text-lg font-black text-gray-900 mb-4">Sections</h3>
               <div className="space-y-2">
                 <button
                   onClick={() => setActiveTab('users')}
                   className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
                     activeTab === 'users'
-                      ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-gray-900 text-white shadow-lg'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   Users
@@ -463,8 +428,8 @@ const AdminPanel: React.FC = () => {
                   onClick={() => setActiveTab('menu')}
                   className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
                     activeTab === 'menu'
-                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-gray-900 text-white shadow-lg'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   Menu Items
@@ -473,8 +438,8 @@ const AdminPanel: React.FC = () => {
                   onClick={() => setActiveTab('tables')}
                   className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
                     activeTab === 'tables'
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-gray-900 text-white shadow-lg'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   Tables
@@ -483,8 +448,8 @@ const AdminPanel: React.FC = () => {
                   onClick={() => setActiveTab('orders')}
                   className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
                     activeTab === 'orders'
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-gray-900 text-white shadow-lg'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                   }`}
                 >
                   Orders
@@ -494,7 +459,7 @@ const AdminPanel: React.FC = () => {
           </div>
 
           <div className="col-span-10">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-purple-200">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-black text-gray-900">
                   {activeTab === 'users' && 'Users Management'}
@@ -505,7 +470,7 @@ const AdminPanel: React.FC = () => {
                 {activeTab !== 'orders' && (
                   <button
                     onClick={openCreateModal}
-                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg"
+                    className="px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
                   >
                     + Create New
                   </button>
@@ -545,7 +510,7 @@ const AdminPanel: React.FC = () => {
                     type="text"
                     value={userForm.name}
                     onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -554,7 +519,7 @@ const AdminPanel: React.FC = () => {
                     type="text"
                     value={userForm.username}
                     onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -565,7 +530,7 @@ const AdminPanel: React.FC = () => {
                     type="password"
                     value={userForm.password}
                     onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -573,7 +538,7 @@ const AdminPanel: React.FC = () => {
                   <select
                     value={userForm.role}
                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   >
                     <option value="waiter">Waiter</option>
                     <option value="manager">Manager</option>
@@ -600,7 +565,7 @@ const AdminPanel: React.FC = () => {
                     type="text"
                     value={menuForm.name}
                     onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -609,7 +574,7 @@ const AdminPanel: React.FC = () => {
                     type="number"
                     value={menuForm.price}
                     onChange={(e) => setMenuForm({ ...menuForm, price: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -617,7 +582,7 @@ const AdminPanel: React.FC = () => {
                   <select
                     value={menuForm.category}
                     onChange={(e) => setMenuForm({ ...menuForm, category: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   >
                     <option value="Drinks">Drinks</option>
                     <option value="Meals">Meals</option>
@@ -644,7 +609,7 @@ const AdminPanel: React.FC = () => {
                     type="number"
                     value={tableForm.number}
                     onChange={(e) => setTableForm({ ...tableForm, number: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -653,7 +618,7 @@ const AdminPanel: React.FC = () => {
                     type="number"
                     value={tableForm.seats}
                     onChange={(e) => setTableForm({ ...tableForm, seats: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -661,7 +626,7 @@ const AdminPanel: React.FC = () => {
                   <select
                     value={tableForm.status}
                     onChange={(e) => setTableForm({ ...tableForm, status: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
                   >
                     <option value="free">Free</option>
                     <option value="occupied">Occupied</option>
@@ -673,13 +638,13 @@ const AdminPanel: React.FC = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 px-6 py-3 bg-gray-500 text-white font-bold rounded-xl hover:bg-gray-600 transition"
+                className="flex-1 px-6 py-3 bg-gray-100 text-gray-900 font-bold rounded-xl hover:bg-gray-200 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={modalMode === 'create' ? handleCreate : handleUpdate}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-700 transition shadow-lg"
+                className="flex-1 px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
               >
                 {modalMode === 'create' ? 'Create' : 'Update'}
               </button>
