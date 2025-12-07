@@ -17,26 +17,27 @@ import {
   useGetOrdersQuery,
 } from '../app/services/api';
 
-// Import all menu images
-import drinkSoda from '../assets/images/drink-soda.jpg';
-import drinkWater from '../assets/images/drink-water.jpg';
-import drinkJuice from '../assets/images/drink-juice.jpg';
-import drinkCoffee from '../assets/images/drink-coffee.jpg';
-import drinkTea from '../assets/images/drink-tea.jpg';
+import cappuccino from '../assets/images/cappuccino.jpg';
+import espresso from '../assets/images/espresso.jpg';
+import latte from '../assets/images/latte.jpg';
+import freshOrangeJuice from '../assets/images/fresh-orange-juice.jpg';
+import mineralWater from '../assets/images/mineral-water.jpg';
+import soda from '../assets/images/soda.jpg';
 
-import mealBurger from '../assets/images/meal-burger.jpg';
-import mealPizza from '../assets/images/meal-pizza.jpg';
-import mealPasta from '../assets/images/meal-pasta.jpg';
-import mealSalad from '../assets/images/meal-salad.jpg';
-import mealSteak from '../assets/images/meal-steak.jpg';
-import mealChicken from '../assets/images/meal-chicken.jpg';
-import mealFish from '../assets/images/meal-fish.jpg';
+// Import MEALS images
+import beefBurger from '../assets/images/beef-burger.jpg';
+import chickenWrap from '../assets/images/chicken-wrap.jpg';
+import caesarSalad from '../assets/images/caesar-salad.jpg';
+import pastaCarbonara from '../assets/images/pasta-carbonara.jpg';
+import grilledFishChips from '../assets/images/grilled-fish-chips.jpg';
+import steakVegetables from '../assets/images/steak-vegetables.jpg';
+import chickenTikka from '../assets/images/chicken-tikka.jpg';
 
-import dessertIcecream from '../assets/images/dessert-icecream.jpg';
-import dessertCake from '../assets/images/dessert-cake.jpg';
-import dessertCookies from '../assets/images/dessert-cookies.jpg';
-import dessertCheesecake from '../assets/images/dessert-cheesecake.jpg';
-import dessertBrownies from '../assets/images/dessert-brownies.jpg';
+// Import DESSERTS images
+import chocolateCake from '../assets/images/chocolate-cake.jpg';
+import vanillaIceCream from '../assets/images/vanilla-ice-cream.jpg';
+import cheesecake from '../assets/images/cheesecake.jpg';
+import fruitSalad from '../assets/images/fruit-salad.jpg';
 
 const AdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'users' | 'menu' | 'tables' | 'orders'>('users');
@@ -69,27 +70,30 @@ const AdminPanel: React.FC = () => {
   const [updateTable] = useUpdateTableMutation();
   const [deleteTable] = useDeleteTableMutation();
 
-  // Map menu item names to images
   const menuImages: { [key: string]: string } = {
-    'Soda': drinkSoda,
-    'Water': drinkWater,
-    'Juice': drinkJuice,
-    'Coffee': drinkCoffee,
-    'Tea': drinkTea,
-    'Burger': mealBurger,
-    'Pizza': mealPizza,
-    'Pasta': mealPasta,
-    'Salad': mealSalad,
-    'Steak': mealSteak,
-    'Chicken': mealChicken,
-    'Fish': mealFish,
-    'Ice Cream': dessertIcecream,
-    'Cake': dessertCake,
-    'Cookies': dessertCookies,
-    'Cheesecake': dessertCheesecake,
-    'Brownies': dessertBrownies,
-  };
-
+  // Drinks
+  'Cappuccino': cappuccino,
+  'Espresso': espresso,
+  'Latte': latte,
+  'Fresh Orange Juice': freshOrangeJuice,
+  'Mineral Water': mineralWater,
+  'Soda': soda,
+  
+  // Meals
+  'Beef Burger': beefBurger,
+  'Chicken Wrap': chickenWrap,
+  'Caesar Salad': caesarSalad,
+  'Pasta Carbonara': pastaCarbonara,
+  'Grilled Fish & Chips': grilledFishChips,
+  'Steak & Vegetables': steakVegetables,
+  'Chicken Tikka': chickenTikka,
+  
+  // Desserts
+  'Chocolate Cake': chocolateCake,
+  'Vanilla Ice Cream': vanillaIceCream,
+  'Cheesecake': cheesecake,
+  'Fruit Salad': fruitSalad,
+};
   React.useEffect(() => {
     if (user?.role !== 'admin') {
       navigate('/dashboard');
