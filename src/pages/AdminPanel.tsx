@@ -16,7 +16,9 @@ import {
   useDeleteTableMutation,
   useGetOrdersQuery,
 } from '../app/services/api';
+import { motion, AnimatePresence } from 'framer-motion';
 
+// Import DRINKS images
 import cappuccino from '../assets/images/cappuccino.jpg';
 import espresso from '../assets/images/espresso.jpg';
 import latte from '../assets/images/latte.jpg';
@@ -52,7 +54,6 @@ const AdminPanel: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // RTK Query hooks
   const { data: users = [], isLoading: usersLoading } = useGetUsersQuery(undefined, { skip: activeTab !== 'users' });
   const { data: menuItems = [], isLoading: menuLoading } = useGetMenuItemsQuery(undefined, { skip: activeTab !== 'menu' });
   const { data: tables = [], isLoading: tablesLoading } = useGetTablesQuery(undefined, { skip: activeTab !== 'tables' });
@@ -71,29 +72,25 @@ const AdminPanel: React.FC = () => {
   const [deleteTable] = useDeleteTableMutation();
 
   const menuImages: { [key: string]: string } = {
-  // Drinks
-  'Cappuccino': cappuccino,
-  'Espresso': espresso,
-  'Latte': latte,
-  'Fresh Orange Juice': freshOrangeJuice,
-  'Mineral Water': mineralWater,
-  'Soda': soda,
-  
-  // Meals
-  'Beef Burger': beefBurger,
-  'Chicken Wrap': chickenWrap,
-  'Caesar Salad': caesarSalad,
-  'Pasta Carbonara': pastaCarbonara,
-  'Grilled Fish & Chips': grilledFishChips,
-  'Steak & Vegetables': steakVegetables,
-  'Chicken Tikka': chickenTikka,
-  
-  // Desserts
-  'Chocolate Cake': chocolateCake,
-  'Vanilla Ice Cream': vanillaIceCream,
-  'Cheesecake': cheesecake,
-  'Fruit Salad': fruitSalad,
-};
+    'Cappuccino': cappuccino,
+    'Espresso': espresso,
+    'Latte': latte,
+    'Fresh Orange Juice': freshOrangeJuice,
+    'Mineral Water': mineralWater,
+    'Soda': soda,
+    'Beef Burger': beefBurger,
+    'Chicken Wrap': chickenWrap,
+    'Caesar Salad': caesarSalad,
+    'Pasta Carbonara': pastaCarbonara,
+    'Grilled Fish & Chips': grilledFishChips,
+    'Steak & Vegetables': steakVegetables,
+    'Chicken Tikka': chickenTikka,
+    'Chocolate Cake': chocolateCake,
+    'Vanilla Ice Cream': vanillaIceCream,
+    'Cheesecake': cheesecake,
+    'Fruit Salad': fruitSalad,
+  };
+
   React.useEffect(() => {
     if (user?.role !== 'admin') {
       navigate('/dashboard');
@@ -179,6 +176,17 @@ const AdminPanel: React.FC = () => {
 
   const loading = usersLoading || menuLoading || tablesLoading || ordersLoading;
 
+  const rowVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+      },
+    }),
+  };
+
   const renderUsersTable = () => (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -193,8 +201,16 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="border-b hover:bg-gray-50">
+          {users.map((user, index) => (
+            <motion.tr
+              key={user.id}
+              custom={index}
+              initial="hidden"
+              animate="visible"
+              variants={rowVariants}
+              whileHover={{ backgroundColor: '#F9FAFB' }}
+              className="border-b"
+            >
               <td className="px-4 py-3">{user.id}</td>
               <td className="px-4 py-3 font-semibold">{user.name}</td>
               <td className="px-4 py-3">{user.username}</td>
@@ -215,20 +231,24 @@ const AdminPanel: React.FC = () => {
                 </span>
               </td>
               <td className="px-4 py-3">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => openEditModal(user)}
                   className="px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 mr-2 text-sm font-semibold"
                 >
                   Edit
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleDelete(user.id)}
                   className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
                 >
                   Delete
-                </button>
+                </motion.button>
               </td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>
@@ -250,11 +270,20 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {menuItems.map((item) => (
-            <tr key={item.id} className="border-b hover:bg-gray-50">
+          {menuItems.map((item, index) => (
+            <motion.tr
+              key={item.id}
+              custom={index}
+              initial="hidden"
+              animate="visible"
+              variants={rowVariants}
+              whileHover={{ backgroundColor: '#F9FAFB' }}
+              className="border-b"
+            >
               <td className="px-4 py-3">
                 {menuImages[item.name] && (
-                  <img
+                  <motion.img
+                    whileHover={{ scale: 1.1 }}
                     src={menuImages[item.name]}
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-lg shadow-md"
@@ -273,20 +302,24 @@ const AdminPanel: React.FC = () => {
                 </span>
               </td>
               <td className="px-4 py-3">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => openEditModal(item)}
                   className="px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 mr-2 text-sm font-semibold"
                 >
                   Edit
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleDelete(item.id)}
                   className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
                 >
                   Delete
-                </button>
+                </motion.button>
               </td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>
@@ -306,8 +339,16 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {tables.map((table) => (
-            <tr key={table.id} className="border-b hover:bg-gray-50">
+          {tables.map((table, index) => (
+            <motion.tr
+              key={table.id}
+              custom={index}
+              initial="hidden"
+              animate="visible"
+              variants={rowVariants}
+              whileHover={{ backgroundColor: '#F9FAFB' }}
+              className="border-b"
+            >
               <td className="px-4 py-3">{table.id}</td>
               <td className="px-4 py-3 font-semibold">Table {table.number}</td>
               <td className="px-4 py-3">{table.seats}</td>
@@ -319,20 +360,24 @@ const AdminPanel: React.FC = () => {
                 </span>
               </td>
               <td className="px-4 py-3">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => openEditModal(table)}
                   className="px-3 py-1 bg-gray-700 text-white rounded-lg hover:bg-gray-600 mr-2 text-sm font-semibold"
                 >
                   Edit
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleDelete(table.id)}
                   className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
                 >
                   Delete
-                </button>
+                </motion.button>
               </td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>
@@ -354,8 +399,16 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
-            <tr key={order.id} className="border-b hover:bg-gray-50">
+          {orders.map((order, index) => (
+            <motion.tr
+              key={order.id}
+              custom={index}
+              initial="hidden"
+              animate="visible"
+              variants={rowVariants}
+              whileHover={{ backgroundColor: '#F9FAFB' }}
+              className="border-b"
+            >
               <td className="px-4 py-3">{order.id}</td>
               <td className="px-4 py-3 font-semibold">Table {order.tableNumber}</td>
               <td className="px-4 py-3">{order.waiterName}</td>
@@ -369,7 +422,7 @@ const AdminPanel: React.FC = () => {
               </td>
               <td className="px-4 py-3">{order.paymentMethod || '-'}</td>
               <td className="px-4 py-3 text-sm">{new Date(order.timestamp).toLocaleString()}</td>
-            </tr>
+            </motion.tr>
           ))}
         </tbody>
       </table>
@@ -381,7 +434,11 @@ const AdminPanel: React.FC = () => {
       <nav className="bg-white shadow-lg border-b-2 border-gray-100">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3"
+            >
               <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
                 <span className="text-xl font-black text-white">AP</span>
               </div>
@@ -389,8 +446,12 @@ const AdminPanel: React.FC = () => {
                 <h1 className="text-xl font-black text-gray-900">Admin Panel</h1>
                 <p className="text-xs text-gray-600 font-semibold">System Management</p>
               </div>
-            </div>
-            <div className="flex items-center gap-4">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4"
+            >
               <button
                 onClick={() => navigate('/dashboard')}
                 className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition font-semibold"
@@ -401,13 +462,15 @@ const AdminPanel: React.FC = () => {
                 <p className="text-sm font-bold text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500">@{user?.username}</p>
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
                 className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-semibold"
               >
                 Logout
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
       </nav>
@@ -415,55 +478,44 @@ const AdminPanel: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-2">
-            <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-gray-100 sticky top-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl shadow-xl p-4 border-2 border-gray-100 sticky top-6"
+            >
               <h3 className="text-lg font-black text-gray-900 mb-4">Sections</h3>
               <div className="space-y-2">
-                <button
-                  onClick={() => setActiveTab('users')}
-                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
-                    activeTab === 'users'
-                      ? 'bg-gray-900 text-white shadow-lg'
-                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  Users
-                </button>
-                <button
-                  onClick={() => setActiveTab('menu')}
-                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
-                    activeTab === 'menu'
-                      ? 'bg-gray-900 text-white shadow-lg'
-                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  Menu Items
-                </button>
-                <button
-                  onClick={() => setActiveTab('tables')}
-                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
-                    activeTab === 'tables'
-                      ? 'bg-gray-900 text-white shadow-lg'
-                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  Tables
-                </button>
-                <button
-                  onClick={() => setActiveTab('orders')}
-                  className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
-                    activeTab === 'orders'
-                      ? 'bg-gray-900 text-white shadow-lg'
-                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  Orders
-                </button>
+                {['users', 'menu', 'tables', 'orders'].map((tab, index) => (
+                  <motion.button
+                    key={tab}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setActiveTab(tab as any)}
+                    className={`w-full px-4 py-3 rounded-lg font-semibold transition text-left ${
+                      activeTab === tab
+                        ? 'bg-gray-900 text-white shadow-lg'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {tab === 'users' ? 'Users' : tab === 'menu' ? 'Menu Items' : tab === 'tables' ? 'Tables' : 'Orders'}
+                  </motion.button>
+                ))}
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="col-span-10">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100"
+            >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-black text-gray-900">
                   {activeTab === 'users' && 'Users Management'}
@@ -472,19 +524,25 @@ const AdminPanel: React.FC = () => {
                   {activeTab === 'orders' && 'Orders Overview'}
                 </h2>
                 {activeTab !== 'orders' && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={openCreateModal}
                     className="px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
                   >
                     + Create New
-                  </button>
+                  </motion.button>
                 )}
               </div>
 
               {loading ? (
-                <div className="text-center py-12">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
                   <p className="text-gray-500 text-lg">Loading...</p>
-                </div>
+                </motion.div>
               ) : (
                 <>
                   {activeTab === 'users' && renderUsersTable()}
@@ -493,169 +551,185 @@ const AdminPanel: React.FC = () => {
                   {activeTab === 'orders' && renderOrdersTable()}
                 </>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-black text-gray-900 mb-6">
-              {modalMode === 'create' ? 'Create New' : 'Edit'}{' '}
-              {activeTab === 'users' ? 'User' : activeTab === 'menu' ? 'Menu Item' : 'Table'}
-            </h2>
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 max-h-[90vh] overflow-y-auto"
+            >
+              <h2 className="text-2xl font-black text-gray-900 mb-6">
+                {modalMode === 'create' ? 'Create New' : 'Edit'}{' '}
+                {activeTab === 'users' ? 'User' : activeTab === 'menu' ? 'Menu Item' : 'Table'}
+              </h2>
 
-            {activeTab === 'users' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
-                  <input
-                    type="text"
-                    value={userForm.name}
-                    onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
+              {activeTab === 'users' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={userForm.name}
+                      onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
+                    <input
+                      type="text"
+                      value={userForm.username}
+                      onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                      Password {modalMode === 'edit' && '(leave blank to keep current)'}
+                    </label>
+                    <input
+                      type="password"
+                      value={userForm.password}
+                      onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Role</label>
+                    <select
+                      value={userForm.role}
+                      onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    >
+                      <option value="waiter">Waiter</option>
+                      <option value="manager">Manager</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={userForm.active}
+                      onChange={(e) => setUserForm({ ...userForm, active: e.target.checked })}
+                      className="w-5 h-5"
+                    />
+                    <label className="text-sm font-bold text-gray-700">Active</label>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
-                  <input
-                    type="text"
-                    value={userForm.username}
-                    onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
+              )}
+
+              {activeTab === 'menu' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={menuForm.name}
+                      onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Price (KES)</label>
+                    <input
+                      type="number"
+                      value={menuForm.price}
+                      onChange={(e) => setMenuForm({ ...menuForm, price: parseFloat(e.target.value) })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                    <select
+                      value={menuForm.category}
+                      onChange={(e) => setMenuForm({ ...menuForm, category: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    >
+                      <option value="Drinks">Drinks</option>
+                      <option value="Meals">Meals</option>
+                      <option value="Desserts">Desserts</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={menuForm.available}
+                      onChange={(e) => setMenuForm({ ...menuForm, available: e.target.checked })}
+                      className="w-5 h-5"
+                    />
+                    <label className="text-sm font-bold text-gray-700">Available</label>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Password {modalMode === 'edit' && '(leave blank to keep current)'}
-                  </label>
-                  <input
-                    type="password"
-                    value={userForm.password}
-                    onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
+              )}
+
+              {activeTab === 'tables' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Table Number</label>
+                    <input
+                      type="number"
+                      value={tableForm.number}
+                      onChange={(e) => setTableForm({ ...tableForm, number: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Seats</label>
+                    <input
+                      type="number"
+                      value={tableForm.seats}
+                      onChange={(e) => setTableForm({ ...tableForm, seats: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Status</label>
+                    <select
+                      value={tableForm.status}
+                      onChange={(e) => setTableForm({ ...tableForm, status: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
+                    >
+                      <option value="free">Free</option>
+                      <option value="occupied">Occupied</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Role</label>
-                  <select
-                    value={userForm.role}
-                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  >
-                    <option value="waiter">Waiter</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={userForm.active}
-                    onChange={(e) => setUserForm({ ...userForm, active: e.target.checked })}
-                    className="w-5 h-5"
-                  />
-                  <label className="text-sm font-bold text-gray-700">Active</label>
-                </div>
+              )}
+
+              <div className="flex gap-3 mt-6">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-900 font-bold rounded-xl hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={modalMode === 'create' ? handleCreate : handleUpdate}
+                  className="flex-1 px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
+                >
+                  {modalMode === 'create' ? 'Create' : 'Update'}
+                </motion.button>
               </div>
-            )}
-
-            {activeTab === 'menu' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
-                  <input
-                    type="text"
-                    value={menuForm.name}
-                    onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Price (KES)</label>
-                  <input
-                    type="number"
-                    value={menuForm.price}
-                    onChange={(e) => setMenuForm({ ...menuForm, price: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
-                  <select
-                    value={menuForm.category}
-                    onChange={(e) => setMenuForm({ ...menuForm, category: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  >
-                    <option value="Drinks">Drinks</option>
-                    <option value="Meals">Meals</option>
-                    <option value="Desserts">Desserts</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={menuForm.available}
-                    onChange={(e) => setMenuForm({ ...menuForm, available: e.target.checked })}
-                    className="w-5 h-5"
-                  />
-                  <label className="text-sm font-bold text-gray-700">Available</label>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'tables' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Table Number</label>
-                  <input
-                    type="number"
-                    value={tableForm.number}
-                    onChange={(e) => setTableForm({ ...tableForm, number: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Seats</label>
-                  <input
-                    type="number"
-                    value={tableForm.seats}
-                    onChange={(e) => setTableForm({ ...tableForm, seats: parseInt(e.target.value) })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Status</label>
-                  <select
-                    value={tableForm.status}
-                    onChange={(e) => setTableForm({ ...tableForm, status: e.target.value })}
-                    className="w-full px-4 py-2 border-2 border-gray-100 rounded-lg focus:border-gray-900 focus:outline-none"
-                  >
-                    <option value="free">Free</option>
-                    <option value="occupied">Occupied</option>
-                  </select>
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex-1 px-6 py-3 bg-gray-100 text-gray-900 font-bold rounded-xl hover:bg-gray-200 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={modalMode === 'create' ? handleCreate : handleUpdate}
-                className="flex-1 px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
-              >
-                {modalMode === 'create' ? 'Create' : 'Update'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

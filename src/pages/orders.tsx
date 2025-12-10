@@ -1,11 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useGetOrdersQuery } from '../app/services/api'; 
-
+import { useGetOrdersQuery } from '../app/services/api';
 
 const Orders: React.FC = () => {
-  const { data: orders = [], isLoading, error } = useGetOrdersQuery();
+  const { data: orders = [], isLoading, error } = useGetOrdersQuery(undefined);
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'paid'>('all');
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'cash' | 'mpesa' | 'card'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,13 +54,41 @@ const Orders: React.FC = () => {
     navigate('/login');
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-2xl font-bold text-gray-700">Loading orders...</div>
-      </div>
-    );
-  }
+  const SkeletonLoader = () => (
+    <div className="space-y-4">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="bg-gray-50 rounded-xl p-6 border-2 border-gray-100 animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6 flex-1">
+              <div>
+                <div className="h-4 w-16 bg-gray-200 rounded mb-2"></div>
+                <div className="h-8 w-20 bg-gray-300 rounded"></div>
+              </div>
+              <div className="h-12 w-px bg-gray-300"></div>
+              <div>
+                <div className="h-4 w-12 bg-gray-200 rounded mb-2"></div>
+                <div className="h-6 w-16 bg-gray-300 rounded"></div>
+              </div>
+              <div className="h-12 w-px bg-gray-300"></div>
+              <div>
+                <div className="h-4 w-16 bg-gray-200 rounded mb-2"></div>
+                <div className="h-6 w-24 bg-gray-300 rounded"></div>
+              </div>
+              <div className="h-12 w-px bg-gray-300"></div>
+              <div>
+                <div className="h-4 w-12 bg-gray-200 rounded mb-2"></div>
+                <div className="h-6 w-20 bg-gray-300 rounded"></div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-8 w-16 bg-gray-300 rounded-full"></div>
+              <div className="h-10 w-28 bg-gray-300 rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   if (error) {
     return (
@@ -124,82 +151,38 @@ const Orders: React.FC = () => {
               <div className="mb-6">
                 <p className="text-sm font-bold text-gray-700 mb-2">Status</p>
                 <div className="space-y-2">
-                  <button
-                    onClick={() => setStatusFilter('all')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      statusFilter === 'all'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    All Orders
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter('open')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      statusFilter === 'open'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    Open
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter('paid')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      statusFilter === 'paid'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    Paid
-                  </button>
+                  {['all', 'open', 'paid'].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status as any)}
+                      className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                        statusFilter === status
+                          ? 'bg-gray-900 text-white shadow-lg'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {status === 'all' ? 'All Orders' : status.charAt(0).toUpperCase() + status.slice(1)}
+                    </button>
+                  ))}
                 </div>
               </div>
 
               <div className="mb-6">
                 <p className="text-sm font-bold text-gray-700 mb-2">Payment</p>
                 <div className="space-y-2">
-                  <button
-                    onClick={() => setPaymentFilter('all')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      paymentFilter === 'all'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    All Methods
-                  </button>
-                  <button
-                    onClick={() => setPaymentFilter('cash')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      paymentFilter === 'cash'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    Cash
-                  </button>
-                  <button
-                    onClick={() => setPaymentFilter('mpesa')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      paymentFilter === 'mpesa'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    M-Pesa
-                  </button>
-                  <button
-                    onClick={() => setPaymentFilter('card')}
-                    className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
-                      paymentFilter === 'card'
-                        ? 'bg-gray-900 text-white shadow-lg'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    Card
-                  </button>
+                  {['all', 'cash', 'mpesa', 'card'].map((payment) => (
+                    <button
+                      key={payment}
+                      onClick={() => setPaymentFilter(payment as any)}
+                      className={`w-full px-3 py-2 rounded-lg font-semibold transition text-left text-sm ${
+                        paymentFilter === payment
+                          ? 'bg-gray-900 text-white shadow-lg'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {payment === 'all' ? 'All Methods' : payment.charAt(0).toUpperCase() + payment.slice(1)}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -221,9 +204,11 @@ const Orders: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-3xl font-black text-gray-900">All Orders</h2>
-                  <p className="text-gray-600">
-                    Showing {filteredOrders.length} of {orders.length} orders
-                  </p>
+                  {!isLoading && (
+                    <p className="text-gray-600">
+                      Showing {filteredOrders.length} of {orders.length} orders
+                    </p>
+                  )}
                 </div>
                 <div className="w-80">
                   <input
@@ -241,7 +226,9 @@ const Orders: React.FC = () => {
                 </div>
               </div>
 
-              {filteredOrders.length === 0 ? (
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : filteredOrders.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-500 text-lg mb-2">No orders found</p>
                   {searchTerm && (
@@ -268,8 +255,8 @@ const Orders: React.FC = () => {
                   {filteredOrders.map((order) => (
                     <div
                       key={order.id}
-                      onClick={() => navigate(`/order/${order.id}`)}
-                      className="bg-gray-50 rounded-xl p-6 border-2 border-gray-100 hover:shadow-lg transition cursor-pointer"
+                      onClick={() => navigate(`/orders/${order.id}`)}
+                      className="bg-gray-50 rounded-xl p-6 border-2 border-gray-100 hover:shadow-lg hover:scale-[1.01] transition cursor-pointer"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-6">

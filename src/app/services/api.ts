@@ -1,23 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:3000';
 
-interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-interface LoginResponse {
-  access_token: string;
-  user: {
-    id: number;
-    name: string;
-    username: string;
-    role: string;
-  };
-}
-
-interface User {
+// ===== EXPORTED TYPES =====
+export interface User {
   id: number;
   name: string;
   username: string;
@@ -25,23 +11,7 @@ interface User {
   active: boolean;
 }
 
-interface CreateUserRequest {
-  name: string;
-  username: string;
-  password: string;
-  role: string;
-  active: boolean;
-}
-
-interface UpdateUserRequest {
-  name?: string;
-  username?: string;
-  password?: string;
-  role?: string;
-  active?: boolean;
-}
-
-interface MenuItem {
+export interface MenuItem {
   id: number;
   name: string;
   price: number;
@@ -49,72 +19,67 @@ interface MenuItem {
   available: boolean;
 }
 
-interface CreateMenuItemRequest {
-  name: string;
-  price: number;
-  category: string;
-  available: boolean;
-}
-
-interface Table {
+export interface Table {
   id: number;
   number: number;
   seats: number;
   status: string;
 }
 
-interface CreateTableRequest {
-  number: number;
-  seats: number;
-  status: string;
-}
-
-interface Order {
+export interface Order {
   id: number;
-  tableNumber: number;
-  waiterName: string;
-  total: number;
-  status: string;
-  paymentMethod?: string;
-  timestamp: string;
-  items?: string;
-}
-
-interface CreateOrderRequest {
   tableId: number;
+  tableNumber: number;
   waiterId: number;
+  waiterName: string;
   items: string;
   total: number;
   status: string;
-}
-
-interface UpdateOrderRequest {
-  status?: string;
   paymentMethod?: string;
+  timestamp: Date;
 }
 
-interface MpesaRequest {
-  phoneNumber: string;
-  amount: number;
+export interface Payment {
+  id: number;
   orderId: number;
+  amount: number;
+  method: string;
+  status: string;
+  transactionId?: string;
+  phoneNumber?: string;
+  timestamp: Date;
+}
+
+export interface Expense {
+  id: number;
+  description: string;
+  amount: number;
+  category: string;
+  submittedBy: string;
+  status: string;
+  date: string;
+  approvedBy?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: API_URL,
+    baseUrl: API_BASE_URL,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set('authorization', `Bearer ${token}`);
       }
       return headers;
     },
   }),
-  tagTypes: ['Users', 'MenuItems', 'Tables', 'Orders'],
+  keepUnusedDataFor: 300,
+  refetchOnMountOrArgChange: 30,
+  tagTypes: ['User', 'MenuItem', 'Table', 'Order', 'Payment', 'Expense'],
   endpoints: (builder) => ({
-    // Auth endpoints
-    login: builder.mutation<LoginResponse, LoginRequest>({
+    login: builder.mutation({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
@@ -122,136 +87,228 @@ export const api = createApi({
       }),
     }),
 
-    // Users endpoints
-    getUsers: builder.query<User[], void>({
+    getUsers: builder.query({
       query: () => '/users',
-      providesTags: ['Users'],
+      providesTags: ['User'],
+      keepUnusedDataFor: 300,
     }),
-    createUser: builder.mutation<User, CreateUserRequest>({
-      query: (user) => ({
+
+    createUser: builder.mutation({
+      query: (newUser) => ({
         url: '/users',
         method: 'POST',
-        body: user,
+        body: newUser,
       }),
-      invalidatesTags: ['Users'],
+      invalidatesTags: ['User'],
     }),
-    updateUser: builder.mutation<User, { id: number; data: UpdateUserRequest }>({
+
+    updateUser: builder.mutation({
       query: ({ id, data }) => ({
         url: `/users/${id}`,
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['Users'],
+      invalidatesTags: ['User'],
     }),
-    deleteUser: builder.mutation<void, number>({
+
+    deleteUser: builder.mutation({
       query: (id) => ({
         url: `/users/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Users'],
+      invalidatesTags: ['User'],
     }),
 
-    // Menu Items endpoints
-    getMenuItems: builder.query<MenuItem[], void>({
+    getMenuItems: builder.query({
       query: () => '/menu-items',
-      providesTags: ['MenuItems'],
+      providesTags: ['MenuItem'],
+      keepUnusedDataFor: 300,
     }),
-    createMenuItem: builder.mutation<MenuItem, CreateMenuItemRequest>({
-      query: (item) => ({
+
+    createMenuItem: builder.mutation({
+      query: (newItem) => ({
         url: '/menu-items',
         method: 'POST',
-        body: item,
+        body: newItem,
       }),
-      invalidatesTags: ['MenuItems'],
+      invalidatesTags: ['MenuItem'],
     }),
-    updateMenuItem: builder.mutation<MenuItem, { id: number; data: Partial<CreateMenuItemRequest> }>({
+
+    updateMenuItem: builder.mutation({
       query: ({ id, data }) => ({
         url: `/menu-items/${id}`,
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['MenuItems'],
+      invalidatesTags: ['MenuItem'],
     }),
-    deleteMenuItem: builder.mutation<void, number>({
+
+    deleteMenuItem: builder.mutation({
       query: (id) => ({
         url: `/menu-items/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['MenuItems'],
+      invalidatesTags: ['MenuItem'],
     }),
 
-    // Tables endpoints
-    getTables: builder.query<Table[], void>({
+    getTables: builder.query({
       query: () => '/tables',
-      providesTags: ['Tables'],
+      providesTags: ['Table'],
+      keepUnusedDataFor: 120,
     }),
-    getTable: builder.query<Table, number>({
+
+    getTable: builder.query({
       query: (id) => `/tables/${id}`,
-      providesTags: ['Tables'],
+      providesTags: ['Table'],
+      keepUnusedDataFor: 120,
     }),
-    createTable: builder.mutation<Table, CreateTableRequest>({
-      query: (table) => ({
+
+    createTable: builder.mutation({
+      query: (newTable) => ({
         url: '/tables',
         method: 'POST',
-        body: table,
+        body: newTable,
       }),
-      invalidatesTags: ['Tables'],
+      invalidatesTags: ['Table'],
     }),
-    updateTable: builder.mutation<Table, { id: number; data: Partial<CreateTableRequest> }>({
+
+    updateTable: builder.mutation({
       query: ({ id, data }) => ({
         url: `/tables/${id}`,
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['Tables'],
+      invalidatesTags: ['Table', 'Order'],
     }),
-    deleteTable: builder.mutation<void, number>({
+
+    deleteTable: builder.mutation({
       query: (id) => ({
         url: `/tables/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Tables'],
+      invalidatesTags: ['Table'],
     }),
 
-    // Orders endpoints
-    getOrders: builder.query<Order[], void>({
+    getOrders: builder.query({
       query: () => '/orders',
-      providesTags: ['Orders'],
+      providesTags: ['Order'],
+      keepUnusedDataFor: 120,
     }),
-    getOrder: builder.query<Order, number>({
+
+    getOrder: builder.query({
       query: (id) => `/orders/${id}`,
-      providesTags: ['Orders'],
+      providesTags: ['Order'],
+      keepUnusedDataFor: 120,
     }),
-    createOrder: builder.mutation<Order, CreateOrderRequest>({
-      query: (order) => ({
+
+    createOrder: builder.mutation({
+      query: (newOrder) => ({
         url: '/orders',
         method: 'POST',
-        body: order,
+        body: newOrder,
       }),
-      invalidatesTags: ['Orders', 'Tables'],
+      invalidatesTags: ['Order', 'Table'],
     }),
-    updateOrder: builder.mutation<Order, { id: number; data: UpdateOrderRequest }>({
+
+    updateOrder: builder.mutation({
       query: ({ id, data }) => ({
         url: `/orders/${id}`,
         method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: ['Orders', 'Tables'],
+      invalidatesTags: ['Order', 'Table'],
     }),
-    deleteOrder: builder.mutation<void, number>({
+
+    deleteOrder: builder.mutation({
       query: (id) => ({
         url: `/orders/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Orders', 'Tables'],
+      invalidatesTags: ['Order', 'Table'],
     }),
 
-    // M-Pesa endpoint
-    initiateMpesaPayment: builder.mutation<any, MpesaRequest>({
-      query: (data) => ({
+    getPayments: builder.query({
+      query: () => '/payments',
+      providesTags: ['Payment'],
+    }),
+
+    getPaymentsByOrder: builder.query({
+      query: (orderId) => `/payments/order/${orderId}`,
+      providesTags: ['Payment'],
+    }),
+
+    getPayment: builder.query({
+      query: (id) => `/payments/${id}`,
+      providesTags: ['Payment'],
+    }),
+
+    createPayment: builder.mutation({
+      query: (payment) => ({
+        url: '/payments',
+        method: 'POST',
+        body: payment,
+      }),
+      invalidatesTags: ['Payment', 'Order'],
+    }),
+
+    updatePayment: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/payments/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['Payment'],
+    }),
+
+    deletePayment: builder.mutation({
+      query: (id) => ({
+        url: `/payments/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Payment'],
+    }),
+
+    getExpenses: builder.query({
+      query: () => '/expenses',
+      providesTags: ['Expense'],
+    }),
+
+    getExpense: builder.query({
+      query: (id) => `/expenses/${id}`,
+      providesTags: ['Expense'],
+    }),
+
+    createExpense: builder.mutation({
+      query: (expense) => ({
+        url: '/expenses',
+        method: 'POST',
+        body: expense,
+      }),
+      invalidatesTags: ['Expense'],
+    }),
+
+    updateExpense: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/expenses/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['Expense'],
+    }),
+
+    deleteExpense: builder.mutation({
+      query: (id) => ({
+        url: `/expenses/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Expense'],
+    }),
+
+    initiateMpesaPayment: builder.mutation({
+      query: (paymentData) => ({
         url: '/mpesa/stk-push',
         method: 'POST',
-        body: data,
+        body: paymentData,
       }),
     }),
   }),
@@ -277,5 +334,16 @@ export const {
   useCreateOrderMutation,
   useUpdateOrderMutation,
   useDeleteOrderMutation,
+  useGetPaymentsQuery,
+  useGetPaymentsByOrderQuery,
+  useGetPaymentQuery,
+  useCreatePaymentMutation,
+  useUpdatePaymentMutation,
+  useDeletePaymentMutation,
+  useGetExpensesQuery,
+  useGetExpenseQuery,
+  useCreateExpenseMutation,
+  useUpdateExpenseMutation,
+  useDeleteExpenseMutation,
   useInitiateMpesaPaymentMutation,
 } = api;

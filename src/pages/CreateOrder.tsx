@@ -1,3 +1,5 @@
+// src/pages/CreateOrder.tsx
+
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -119,21 +121,37 @@ const CreateOrder: React.FC = () => {
       return;
     }
 
-    if (!user || !table) return;
+    if (!user || !table) {
+      alert('Missing user or table information');
+      return;
+    }
+
+    const orderData = {
+      tableId: table.id,
+      waiterId: user.id,
+      items: JSON.stringify(orderItems),
+      total: calculateTotal(),
+      status: 'open',
+    };
+
+    console.log('Creating order with data:', orderData);
 
     try {
-      await createOrder({
-        tableId: table.id,
-        waiterId: user.id,
-        items: JSON.stringify(orderItems),
-        total: calculateTotal(),
-        status: 'open',
-      }).unwrap();
-
+      const result = await createOrder(orderData).unwrap();
+      console.log('Order created successfully:', result);
       alert('Order created successfully!');
       navigate('/orders');
-    } catch (err) {
-      alert('Failed to create order');
+    } catch (err: any) {
+      console.error('Order creation error:', err);
+      
+      // More detailed error message
+      if (err.data?.message) {
+        alert(`Failed to create order: ${err.data.message}`);
+      } else if (err.status) {
+        alert(`Failed to create order: Server returned status ${err.status}`);
+      } else {
+        alert('Failed to create order. Please check console for details.');
+      }
     }
   };
 

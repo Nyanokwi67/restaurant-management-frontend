@@ -1,8 +1,28 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const About: React.FC = () => {
   const navigate = useNavigate();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.6 }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -10,13 +30,21 @@ const About: React.FC = () => {
       <nav className="bg-white shadow-md border-b border-gray-100">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3"
+            >
               <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
                 <span className="text-xl font-black text-white">MR</span>
               </div>
               <span className="text-2xl font-black text-gray-900">Miriam's Restaurant</span>
-            </div>
-            <div className="flex items-center gap-6">
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-6"
+            >
               <button
                 onClick={() => navigate('/')}
                 className="text-gray-600 hover:text-gray-900 font-semibold transition"
@@ -41,13 +69,15 @@ const About: React.FC = () => {
               >
                 Contact
               </button>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/login')}
                 className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-semibold shadow-lg"
               >
                 Login
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
       </nav>
@@ -55,84 +85,141 @@ const About: React.FC = () => {
       {/* Hero Section - White */}
       <div className="bg-white py-20">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto text-center"
+          >
             <h1 className="text-6xl font-black text-gray-900 mb-6">About Us</h1>
             <p className="text-xl text-gray-600 leading-relaxed">
               We're revolutionizing restaurant management with cutting-edge technology 
               that makes running your business simpler, faster, and more profitable.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Mission Section - Grey-50 */}
       <div className="bg-gray-50 py-20">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto"
+          >
             <h2 className="text-4xl font-black text-gray-900 mb-8 text-center">Our Mission</h2>
-            <p className="text-lg text-gray-600 leading-relaxed mb-6">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="text-lg text-gray-600 leading-relaxed mb-6"
+            >
               Our mission is to empower restaurants with technology that streamlines operations, 
               enhances customer experiences, and drives growth. We believe that every restaurant, 
               regardless of size, deserves access to world-class management tools.
-            </p>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="text-lg text-gray-600 leading-relaxed"
+            >
               By combining intuitive design with powerful features, we help restaurant owners 
               focus on what they do best: creating exceptional dining experiences.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </div>
       </div>
 
       {/* Values Section - Grey-100 */}
       <div className="bg-gray-100 py-20">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-black text-gray-900 mb-12 text-center">Our Values</h2>
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-4xl font-black text-gray-900 mb-12 text-center"
+          >
+            Our Values
+          </motion.h2>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+          >
+            <motion.div
+              variants={cardVariants}
+              whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200"
+            >
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Innovation</h3>
               <p className="text-gray-600 leading-relaxed">
                 We continuously innovate to provide cutting-edge solutions that keep your 
                 restaurant ahead of the competition.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+            <motion.div
+              variants={cardVariants}
+              whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200"
+            >
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Simplicity</h3>
               <p className="text-gray-600 leading-relaxed">
                 Complex problems deserve simple solutions. We make restaurant management 
                 effortless and intuitive.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+            <motion.div
+              variants={cardVariants}
+              whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
+              className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200"
+            >
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Reliability</h3>
               <p className="text-gray-600 leading-relaxed">
                 Your business depends on us, so we ensure our platform is always available, 
                 secure, and performing at its best.
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
       {/* Team Section - White */}
       <div className="bg-white py-20">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto text-center"
+          >
             <h2 className="text-4xl font-black text-gray-900 mb-8">Why Choose Us</h2>
             <p className="text-lg text-gray-600 leading-relaxed mb-12">
               With years of experience in the restaurant industry and technology sector, 
               we understand the unique challenges you face and have built solutions specifically 
               designed to address them.
             </p>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/contact')}
               className="px-8 py-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition font-bold text-lg shadow-xl"
             >
               Get In Touch
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </div>
       </div>
 

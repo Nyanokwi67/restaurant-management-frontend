@@ -1,3 +1,5 @@
+// src/context/AuthContext.tsx
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLoginMutation } from '../app/services/api';
 
@@ -32,11 +34,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (username: string, password: string) => {
     try {
       const result = await loginMutation({ username, password }).unwrap();
-      localStorage.setItem('token', result.access_token);
+      
+      console.log('✅ Login response:', result);  // Debug log
+      
+      // ✅ Backend returns "token", not "access_token"
+      localStorage.setItem('token', result.token);
       localStorage.setItem('user', JSON.stringify(result.user));
       setUser(result.user);
-    } catch (error) {
-      throw new Error('Login failed');
+      
+      console.log('✅ Token saved:', result.token);
+      console.log('✅ User saved:', result.user);
+    } catch (error: any) {
+      console.error('❌ Login error:', error);
+      throw new Error(error?.data?.message || 'Login failed');
     }
   };
 
