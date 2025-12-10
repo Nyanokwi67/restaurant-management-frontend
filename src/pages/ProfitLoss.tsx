@@ -21,7 +21,7 @@ const ProfitLoss: FC = () => {
 
   const { data: orders = [] } = useGetOrdersQuery(undefined);
   const { data: expenses = [] } = useGetExpensesQuery(undefined);
-  const { data: payments = [] } = useGetPaymentsQuery(undefined);
+  const { data: _payments = [] } = useGetPaymentsQuery(undefined);
 
   const [dateRange, setDateRange] = useState<DateRange>({
     start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],

@@ -53,7 +53,7 @@ const CreateOrder: React.FC = () => {
   const navigate = useNavigate();
 
   const { data: table, isLoading: tableLoading, error: tableError } = useGetTableQuery(parseInt(tableId || '0'));
-  const { data: menuItems = [], isLoading: menuLoading } = useGetMenuItemsQuery();
+  const { data: menuItems = [], isLoading: menuLoading } = useGetMenuItemsQuery(undefined);
   const [createOrder, { isLoading: submitting }] = useCreateOrderMutation();
 
   const categories = ['Drinks', 'Meals', 'Desserts'];
@@ -195,8 +195,7 @@ const CreateOrder: React.FC = () => {
     );
   }
 
-  const filteredItems = menuItems.filter((item) => item.category === selectedCategory && item.available);
-
+  const filteredItems = menuItems.filter((item: MenuItem) => item.category === selectedCategory && item.available);
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-lg border-b-2 border-gray-100">
@@ -309,7 +308,7 @@ const CreateOrder: React.FC = () => {
                   className="grid grid-cols-2 gap-4"
                 >
                   <AnimatePresence mode="wait">
-                    {filteredItems.map((item, index) => (
+                    {filteredItems.map((item: MenuItem, index: number) => (
                       <motion.div
                         key={item.id}
                         layout
@@ -416,7 +415,7 @@ const CreateOrder: React.FC = () => {
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => {
-                                  const menuItem = menuItems.find((mi) => mi.id === item.id);
+                                  const menuItem = menuItems.find((mi: MenuItem) => mi.id === item.id);
                                   if (menuItem) addItem(menuItem);
                                 }}
                                 className="w-8 h-8 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-bold"

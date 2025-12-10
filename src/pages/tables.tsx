@@ -1,11 +1,24 @@
-import React from 'react';
+// src/pages/tables.tsx
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useGetTablesQuery } from '../app/services/api';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// ✅ ADD THIS INTERFACE AT THE TOP
+interface Table {
+  id: number;
+  number: number;
+  seats: number;
+  status: string;
+}
 
 const Tables: React.FC = () => {
-  const { data: tables = [], isLoading, error } = useGetTablesQuery();
+  const { data: tables = [], isLoading, error } = useGetTablesQuery(undefined);
+  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -14,49 +27,27 @@ const Tables: React.FC = () => {
     navigate('/login');
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+  const handleTableClick = (table: Table) => {
+    setSelectedTable(table);
+    if (table.status === 'free') {
+      setShowModal(true);
     }
   };
 
-  const cardVariants = {
-    hidden: { y: 30, opacity: 0, scale: 0.9 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.5 }
+  const handleCreateOrder = () => {
+    if (selectedTable) {
+      navigate(`/create-order/${selectedTable.id}`);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl font-bold text-gray-700"
-        >
-          Loading tables...
-        </motion.div>
-      </div>
-    );
-  }
+  // ✅ ADD TYPE ANNOTATIONS HERE
+  const freeTables = tables.filter((table: Table) => table.status === 'free');
+  const occupiedTables = tables.filter((table: Table) => table.status === 'occupied');
 
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
+        <div className="text-center">
           <p className="text-2xl font-bold text-gray-900 mb-4">Failed to load tables</p>
           <button
             onClick={() => navigate('/dashboard')}
@@ -64,13 +55,10 @@ const Tables: React.FC = () => {
           >
             Back to Dashboard
           </button>
-        </motion.div>
+        </div>
       </div>
     );
   }
-
-  const freeTables = tables.filter((table) => table.status === 'free');
-  const occupiedTables = tables.filter((table) => table.status === 'occupied');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -87,7 +75,7 @@ const Tables: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-xl font-black text-gray-900">Tables</h1>
-                <p className="text-xs text-gray-600 font-semibold">Manage Tables</p>
+                <p className="text-xs text-gray-600 font-semibold">Select a table</p>
               </div>
             </motion.div>
             <motion.div
@@ -125,88 +113,107 @@ const Tables: React.FC = () => {
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <h2 className="text-4xl font-black text-gray-900 mb-2">Restaurant Tables</h2>
-          <p className="text-gray-600 text-lg">
-            {freeTables.length} available • {occupiedTables.length} occupied
-          </p>
-        </motion.div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-black text-gray-900">Available Tables</h2>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-gray-900 rounded"></div>
+                <span className="text-sm font-semibold text-gray-700">Free ({freeTables.length})</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-gray-500 rounded"></div>
+                <span className="text-sm font-semibold text-gray-700">Occupied ({occupiedTables.length})</span>
+              </div>
+            </div>
+          </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {tables.map((table, index) => (
-            <motion.div
-              key={table.id}
-              variants={cardVariants}
-              whileHover={{ y: -10, scale: 1.02, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
-              className={`rounded-2xl p-6 shadow-xl border-2 transition ${
-                table.status === 'free'
-                  ? 'bg-white border-gray-100'
-                  : 'bg-gray-100 border-gray-200'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <motion.h3
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
-                  className="text-3xl font-black text-gray-900"
-                >
-                  Table {table.number}
-                </motion.h3>
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.5 }}
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Loading tables...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {/* ✅ ADD TYPE ANNOTATION HERE */}
+              {tables.map((table: Table, index: number) => (
+                <motion.div
+                  key={table.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4 + index * 0.05, type: 'spring' }}
-                  className={`px-4 py-2 rounded-full text-sm font-bold ${
-                    table.status === 'free'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-500 text-white'
-                  }`}
-                >
-                  {table.status.toUpperCase()}
-                </motion.span>
-              </div>
-
-              <div className="mb-4">
-                <p className="text-gray-600">
-                  <span className="font-bold text-gray-900">{table.seats}</span> seats
-                </p>
-              </div>
-
-              {table.status === 'free' && (
-                <motion.button
+                  transition={{ delay: index * 0.05 }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate(`/create-order/${table.id}`)}
-                  className="w-full px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
+                  onClick={() => handleTableClick(table)}
+                  className={`relative rounded-2xl p-6 cursor-pointer transition shadow-xl ${
+                    table.status === 'free'
+                      ? 'bg-gray-900 text-white hover:bg-gray-800'
+                      : 'bg-gray-500 text-white cursor-not-allowed'
+                  }`}
                 >
-                  Create Order
-                </motion.button>
-              )}
-
-              {table.status === 'occupied' && (
-                <div className="text-center py-3 bg-gray-200 rounded-xl">
-                  <p className="text-gray-700 font-bold">Table is occupied</p>
-                </div>
-              )}
-            </motion.div>
-          ))}
+                  <div className="text-center">
+                    <p className="text-sm font-semibold mb-2">Table</p>
+                    <p className="text-4xl font-black mb-2">{table.number}</p>
+                    <p className="text-xs font-semibold">{table.seats} seats</p>
+                    <div className="mt-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        table.status === 'free'
+                          ? 'bg-white text-gray-900'
+                          : 'bg-gray-700 text-white'
+                      }`}>
+                        {table.status.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
+      </div>
 
-        {tables.length === 0 && (
+      <AnimatePresence>
+        {showModal && selectedTable && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12"
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6"
+            onClick={() => setShowModal(false)}
           >
-            <p className="text-gray-500 text-lg">No tables available</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8"
+            >
+              <h2 className="text-2xl font-black text-gray-900 mb-4">
+                Create Order for Table {selectedTable.number}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Start a new order for this table with {selectedTable.seats} seats.
+              </p>
+              <div className="flex gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-900 font-bold rounded-xl hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleCreateOrder}
+                  className="flex-1 px-6 py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg"
+                >
+                  Create Order
+                </motion.button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 };
