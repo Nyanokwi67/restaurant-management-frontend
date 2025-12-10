@@ -1,4 +1,3 @@
-// src/context/AuthContext.tsx
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLoginMutation } from '../app/services/api';
@@ -35,15 +34,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const result = await loginMutation({ username, password }).unwrap();
       
-      console.log('✅ Login response:', result);  // Debug log
+      console.log('✅ Login response:', result);
       
-      // ✅ Backend returns "token", not "access_token"
       localStorage.setItem('token', result.token);
       localStorage.setItem('user', JSON.stringify(result.user));
       setUser(result.user);
       
       console.log('✅ Token saved:', result.token);
       console.log('✅ User saved:', result.user);
+      
+      // ✅ Navigation will be handled in Login component
     } catch (error: any) {
       console.error('❌ Login error:', error);
       throw new Error(error?.data?.message || 'Login failed');
