@@ -56,6 +56,9 @@ const Dashboard: React.FC = () => {
 
   // Check if user has access to admin/manager features
   const canAccessFinancials = user?.role === 'admin' || user?.role === 'manager';
+  
+  // ✅ NEW: Only waiters and managers can create orders
+  const canCreateOrders = user?.role === 'waiter' || user?.role === 'manager';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -135,15 +138,18 @@ const Dashboard: React.FC = () => {
           transition={{ delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-3 gap-6"
         >
-          <motion.button
-            whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/tables')}
-            className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-100 hover:border-gray-900 transition text-left"
-          >
-            <h3 className="text-xl font-black text-gray-900 mb-2">Tables</h3>
-            <p className="text-gray-600 text-sm">Manage restaurant tables</p>
-          </motion.button>
+          {/* ✅ ONLY CHANGE: Tables button hidden for admin */}
+          {canCreateOrders && (
+            <motion.button
+              whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/tables')}
+              className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-100 hover:border-gray-900 transition text-left"
+            >
+              <h3 className="text-xl font-black text-gray-900 mb-2">Tables</h3>
+              <p className="text-gray-600 text-sm">Manage restaurant tables</p>
+            </motion.button>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}
@@ -178,19 +184,6 @@ const Dashboard: React.FC = () => {
             >
               <h3 className="text-xl font-black text-gray-900 mb-2">Expenses</h3>
               <p className="text-gray-600 text-sm">Manage expenses</p>
-            </motion.button>
-          )}
-
-          {/* Only show Profit & Loss for admin/manager */}
-          {canAccessFinancials && (
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/profit-loss')}
-              className="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-100 hover:border-green-600 transition text-left"
-            >
-              <h3 className="text-xl font-black text-green-600 mb-2">Profit & Loss</h3>
-              <p className="text-gray-600 text-sm">Financial reports</p>
             </motion.button>
           )}
 

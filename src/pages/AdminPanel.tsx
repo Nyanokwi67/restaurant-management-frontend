@@ -1,3 +1,5 @@
+// src/pages/AdminPanel.tsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -201,7 +203,7 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index) => (
+          {users.map((user: any, index: number) => (
             <motion.tr
               key={user.id}
               custom={index}
@@ -270,7 +272,7 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {menuItems.map((item, index) => (
+          {menuItems.map((item: any, index: number) => (
             <motion.tr
               key={item.id}
               custom={index}
@@ -339,7 +341,7 @@ const AdminPanel: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {tables.map((table, index) => (
+          {tables.map((table: any, index: number) => (
             <motion.tr
               key={table.id}
               custom={index}
@@ -384,6 +386,7 @@ const AdminPanel: React.FC = () => {
     </div>
   );
 
+  // ✅ UPDATED: Orders table now VIEW-ONLY with "View Details" button
   const renderOrdersTable = () => (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -396,10 +399,11 @@ const AdminPanel: React.FC = () => {
             <th className="px-4 py-3 text-left font-bold text-gray-700">Status</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Payment</th>
             <th className="px-4 py-3 text-left font-bold text-gray-700">Date</th>
+            <th className="px-4 py-3 text-left font-bold text-gray-700">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {orders.map((order, index) => (
+          {orders.map((order: any, index: number) => (
             <motion.tr
               key={order.id}
               custom={index}
@@ -422,6 +426,16 @@ const AdminPanel: React.FC = () => {
               </td>
               <td className="px-4 py-3">{order.paymentMethod || '-'}</td>
               <td className="px-4 py-3 text-sm">{new Date(order.timestamp).toLocaleString()}</td>
+              <td className="px-4 py-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate(`/orders/${order.id}`)}
+                  className="px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-semibold"
+                >
+                  View Details
+                </motion.button>
+              </td>
             </motion.tr>
           ))}
         </tbody>
@@ -523,6 +537,7 @@ const AdminPanel: React.FC = () => {
                   {activeTab === 'tables' && 'Tables Management'}
                   {activeTab === 'orders' && 'Orders Overview'}
                 </h2>
+                {/* ✅ UPDATED: Hide "Create New" button for Orders tab */}
                 {activeTab !== 'orders' && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
