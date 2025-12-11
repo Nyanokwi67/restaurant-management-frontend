@@ -1,4 +1,4 @@
-// src/App.tsx
+// src/App.tsx - Updated with PaymentCallback
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -17,6 +17,7 @@ import Expenses from './pages/Expenses';
 import AdminPanel from './pages/AdminPanel';
 import Register from './pages/Register';
 import ProfitLoss from './pages/ProfitLoss';
+import PaymentCallback from './pages/PaymentCallback'; //  NEW IMPORT
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
@@ -25,15 +26,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <BrowserRouter> {/* ✅ MOVED: Router wraps everything */}
-      <AuthProvider> {/* ✅ MOVED: AuthProvider inside Router */}
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
 
+          {/* Payment Callback Route (can be public for Paystack redirect) */}
+          <Route path="/payment/callback" element={<PaymentCallback />} />
+
+          {/* Protected Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/tables" element={<ProtectedRoute><Tables /></ProtectedRoute>} />
           <Route path="/create-order/:tableId" element={<ProtectedRoute><CreateOrder /></ProtectedRoute>} />
@@ -45,6 +51,7 @@ function App() {
           <Route path="/admin-panel" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
           <Route path="/register" element={<ProtectedRoute><Register /></ProtectedRoute>} />
 
+          {/* Catch all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

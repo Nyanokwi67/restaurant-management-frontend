@@ -63,6 +63,18 @@ export interface Expense {
   updatedAt: Date;
 }
 
+export interface PaystackInitializeResponse {
+  success: boolean;
+  authorization_url: string;
+  reference: string;
+}
+
+export interface PaystackVerifyResponse {
+  success: boolean;
+  message: string;
+  data: any;
+}
+
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
@@ -311,6 +323,25 @@ export const api = createApi({
         body: paymentData,
       }),
     }),
+
+    initializePaystackPayment: builder.mutation({
+      query: (data: { 
+        orderId: number; 
+        email: string; 
+        amount: number;
+        channel?: 'card' | 'mobile_money';
+        phoneNumber?: string;
+      }) => ({
+        url: '/payments/paystack/initialize',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    verifyPaystackPayment: builder.query({
+      query: (reference: string) => `/payments/paystack/verify/${reference}`,
+      providesTags: ['Payment'],
+    }),
   }),
 });
 
@@ -346,4 +377,6 @@ export const {
   useUpdateExpenseMutation,
   useDeleteExpenseMutation,
   useInitiateMpesaPaymentMutation,
+  useInitializePaystackPaymentMutation,
+  useVerifyPaystackPaymentQuery,
 } = api;
